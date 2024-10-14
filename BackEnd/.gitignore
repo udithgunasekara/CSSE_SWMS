@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+##Ignore firebase admin sdk json file
+/csse-waste-management-system-firebase-adminsdk-kkbwv-086fcc6888.json
