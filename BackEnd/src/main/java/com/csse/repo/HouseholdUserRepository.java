@@ -35,7 +35,7 @@ public class HouseholdUserRepository {
         if (document.exists()) {
             return Optional.ofNullable(document.toObject(HouseholdUser.class));
         }
-        return null;
+        return Optional.empty();
     }
 
     // Update operation

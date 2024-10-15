@@ -35,7 +35,7 @@ public class TrashBinRepository {
 
     public void updateTrashbin(Trashbin trashbin) throws ExecutionException, InterruptedException {
         firestore.collection(TRASHBIN_COLLECTION_NAME).document(trashbin.getTrashbinId()).set(trashbin).get();
-    } 
+    }
 
     public void deleteTrashbin(String id) throws ExecutionException, InterruptedException {
         firestore.collection(TRASHBIN_COLLECTION_NAME).document(id).delete().get();
@@ -48,4 +48,5 @@ public class TrashBinRepository {
         } while (findTrashbinById(binId).isPresent());
         return binId;
     }
+
 }
