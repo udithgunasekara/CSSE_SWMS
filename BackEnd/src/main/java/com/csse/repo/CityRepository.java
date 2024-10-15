@@ -1,7 +1,10 @@
 package com.csse.repo;
 
 import com.csse.DTO.City;
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.WriteResult;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,7 +25,9 @@ public class CityRepository {
     public String createCity(City city) throws ExecutionException, InterruptedException {
         String cityId = generateUniqueCityId();
         city.setCityid(cityId);
-        firestore.collection(CITY_COLLECTION_NAME).document(cityId).set(city).get();
+        DocumentReference docRef = firestore.collection(CITY_COLLECTION_NAME).document(cityId);
+        ApiFuture<WriteResult> result = docRef.set(city);
+        result.get();
         return cityId;
     }
 

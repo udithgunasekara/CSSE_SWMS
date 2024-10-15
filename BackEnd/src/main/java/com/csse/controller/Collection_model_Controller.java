@@ -1,6 +1,6 @@
 package com.csse.controller;
 import com.csse.DTO.Collection_model;
-import com.csse.Service.Imp.Collection_model_service;
+import com.csse.service.Imp.Collection_model_service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

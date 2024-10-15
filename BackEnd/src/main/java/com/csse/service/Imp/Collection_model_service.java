@@ -1,4 +1,4 @@
-package com.csse.Service.Imp;
+package com.csse.service.Imp;
 import com.csse.DTO.Collection_model;
 import com.csse.repo.CollectionModelRepository;
 import com.google.cloud.firestore.CollectionReference;
