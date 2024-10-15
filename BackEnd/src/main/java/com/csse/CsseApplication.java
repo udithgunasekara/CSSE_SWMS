@@ -18,11 +18,3 @@ public class CsseApplication {
 //	}
 
 }
-@RestController
-class TestController {
-
-	@PostMapping("/test")
-	public String testing() {
-		return "Post mapping success";
-	}
-}
