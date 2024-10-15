@@ -11,6 +11,6 @@ public class TestController {
 
     @GetMapping("/test")
     public ResponseEntity<String> testCors() {
-        return ResponseEntity.ok("CORS testing passed Hutto!");
+        return ResponseEntity.ok("CORS testing passed!");
     }
 }
