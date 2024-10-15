@@ -1,7 +1,7 @@
 package com.csse.controller;
 
 import com.csse.DTO.ProcessingFacility;
-import com.csse.Service.Imp.ProcessingFacilityService;
+import com.csse.service.Imp.ProcessingFacilityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

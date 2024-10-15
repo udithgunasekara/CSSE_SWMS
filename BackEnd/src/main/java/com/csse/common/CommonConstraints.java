@@ -5,4 +5,6 @@ public class CommonConstraints {
     public static final String CITY_COLLECTION_NAME = "city";
     public static final String P_FACILITY_COLLECTION_NAME = "processing_facility";
     public static final String TRASHBIN_COLLECTION_NAME = "trashbin";
+    public static final String USER_COLLECTION_NAME = "user";
+
 }
