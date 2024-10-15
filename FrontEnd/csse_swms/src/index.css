@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 640px) {
+  .text-3xl {
+    font-size: 1.5rem;
+  }
+  .text-2xl {
+    font-size: 1.25rem;
+  }
+  .text-xl {
+    font-size: 1.125rem;
+  }
+}
+
+/* Improved typography for readability */
+body {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Touch-friendly buttons and inputs */
+button, input, select {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Fluid images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Simplified menu for smaller screens */
+@media (max-width: 768px) {
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+}
+
+/* Progressive enhancement for older devices */
+@supports not (display: flex) {
+  .flex {
+    display: block;
+  }
+}
