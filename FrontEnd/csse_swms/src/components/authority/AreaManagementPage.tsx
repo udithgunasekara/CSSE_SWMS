@@ -1,13 +1,34 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 
-const AreaManagementPage = () => {
-  const [cities, setCities] = useState([
-    { id: 1, name: 'New York', model: 'Urban' },
-    { id: 2, name: 'Los Angeles', model: 'Suburban' },
-    { id: 3, name: 'Chicago', model: 'Mixed' },
-  ]);
+interface City {
+  cityid: string;
+  cityname: string;
+  activemodel: string;
+}
 
-  const [facilities, setFacilities] = useState([
+interface CollectionModel {
+  id: string;
+  modelname: string;
+  fee: string;
+}
+
+
+interface Facility {
+  id: number;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+}
+
+const AreaManagementPage: React.FC = () => {
+  
+  const [cities, setCities] = useState<City[]>([]);
+  const [collectionModel,setCollectionModel] = useState<CollectionModel[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [facilities, setFacilities] = useState<Facility[]>([
     {
       id: 1,
       name: 'Recycling Center A',
@@ -23,6 +44,51 @@ const AreaManagementPage = () => {
       longitude: -118.2437,
     },
   ]);
+
+  useEffect(() => {
+    const fetchData = async () => { 
+      
+      try {
+        const [citiesResponse, collectionModelResponse] = await Promise.all([
+          axios.get<City[]>('http://localhost:8081/api/city'),
+          axios.get<CollectionModel[]>('http://localhost:8081/api/model'),
+        ]);
+        setCities(citiesResponse.data);
+        console.log(citiesResponse.data);
+        setCollectionModel(collectionModelResponse.data);
+        console.log(collectionModelResponse.data);
+        setLoading(false);
+      } catch (error) {
+        setError('Error fetching data');
+        setLoading(false);
+      }
+    }
+    fetchData();
+},[]);
+
+  const handleModelChange = async (cityId: String, newModel: String) => {
+    try {
+      await axios.patch(`/api/city/${cityId}?activeModel=${newModel}`);
+      setCities(cities.map((city) => 
+        city.cityid === cityId ? { ...city, activeModel: newModel } : city
+      ));
+    } catch (err) {
+      setError('Error updating city');
+    }
+  };
+
+  const handleDeleteCity = async (cityId: string) => {
+    try {
+      await axios.delete(`/api/city/${cityId}`);
+      setCities(cities.filter(city => city.cityid !== cityId));
+    } catch (err) {
+      setError('Error deleting city');
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+
 
   return (
     <div className="p-4">
@@ -53,32 +119,28 @@ const AreaManagementPage = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {cities.map((city) => (
-                  <tr key={city.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">{city.name}</td>
+                  <tr key={city.cityid}>
+                    <td className="px-6 py-4 whitespace-nowrap">{city.cityname}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <select className="border rounded p-1">
-                        <option value="Urban" selected={city.model === 'Urban'}>
-                          Urban
-                        </option>
-                        <option
-                          value="Suburban"
-                          selected={city.model === 'Suburban'}
-                        >
-                          Suburban
-                        </option>
-                        <option value="Rural" selected={city.model === 'Rural'}>
-                          Rural
-                        </option>
-                        <option value="Mixed" selected={city.model === 'Mixed'}>
-                          Mixed
-                        </option>
+                      <select className="border rounded p-1" 
+                        value={city.activemodel} 
+                        onChange={(e) => handleModelChange(city.cityid,e.target.value)}
+                      >
+                        {collectionModel.map(model => (
+                          <option key={model.id} value={model.modelname}>
+                            {model.modelname}
+                          </option>
+                          )
+                        )}                        
                       </select>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button className="text-blue-500 hover:text-blue-700 mr-2">
-                        Edit
+                        Update
                       </button>
-                      <button className="text-red-500 hover:text-red-700">
+                      <button className="text-red-500 hover:text-red-700"
+                        onClick={() => handleDeleteCity(city.cityid)}
+                      >
                         Delete
                       </button>
                     </td>
