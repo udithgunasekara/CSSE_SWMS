@@ -33,6 +33,10 @@ public class WasteCollectionPersonalController {
         try{
             String tagid = wasteCollectionPresonalService.updateWasteCollected(id,userid);
             return  ResponseEntity.ok("Trashbin with ID " + tagid + " updated successfully.");
+        }catch (IllegalArgumentException e) {
+            // Handle cases where the trashbin is empty
+            return ResponseEntity.status(400).body("Trashbin is empty.");
+
         }catch (ExecutionException | InterruptedException e) {
             // Handle possible exceptions, like ExecutionException or InterruptedException
             return ResponseEntity.status(500).body("An error occurred while updating waste collection.");

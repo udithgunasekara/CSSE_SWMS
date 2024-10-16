@@ -1,5 +1,6 @@
 package com.csse.service.Imp;
 
+import com.csse.DTO.CollectionHistory;
 import com.csse.DTO.Trashbin;
 import com.csse.DTO.WasteCollectionPersonal;
 import com.csse.repo.CityRepository;
@@ -15,10 +16,12 @@ public class WasteCollectionPersonalServiceImpl implements WasteCollectionPreson
 
     private final WasteCollectionPersonalRepo wasteCollectionPersonalRepo;
     private final TrashBinRepository trashBinRepository;
+    private final CollectionHistoryServiceImpl collectionHistoryService;
 
-    public WasteCollectionPersonalServiceImpl(WasteCollectionPersonalRepo wasteCollectionPersonalRepo, TrashBinRepository trashBinRepository) {
+    public WasteCollectionPersonalServiceImpl(WasteCollectionPersonalRepo wasteCollectionPersonalRepo, TrashBinRepository trashBinRepository, CollectionHistoryServiceImpl collectionHistoryService) {
         this.wasteCollectionPersonalRepo = wasteCollectionPersonalRepo;
         this.trashBinRepository = trashBinRepository;
+        this.collectionHistoryService = collectionHistoryService;
     }
 
     @Override
@@ -29,13 +32,20 @@ public class WasteCollectionPersonalServiceImpl implements WasteCollectionPreson
     @Override
     public String updateWasteCollected(String id, String userid) throws ExecutionException, InterruptedException {
         Trashbin trashbin = trashBinRepository.findTrashbinById(id).get();
-        trashbin.setCollected(true);
-        trashbin.setAssigned(false);
-        trashbin.setWasteLevel(0);
-        trashBinRepository.updateTrashbin(trashbin);
-        WasteCollectionPersonal user = wasteCollectionPersonalRepo.getuser(userid).get();
-        user.setWasteCollected(user.getWasteCollected()+1);
-        wasteCollectionPersonalRepo.updateWasteCollectionPersonal(id,user);
+        if (trashbin.getWasteLevel() > 0) {
+            trashbin.setCollected(true);
+            trashbin.setAssigned(false);
+            trashbin.setWasteLevel(0);
+            trashbin.setFull(false);
+            trashBinRepository.updateTrashbin(trashbin);
+            WasteCollectionPersonal user = wasteCollectionPersonalRepo.getuser(userid).get();
+            user.setWasteCollected(user.getWasteCollected()+1);
+            wasteCollectionPersonalRepo.updateWasteCollectionPersonal(userid,user);
+            collectionHistoryService.createNewCollectionHistor(userid,id);
+
+        }else{
+            throw new IllegalArgumentException("Trashbin is empty");
+        }
         return id;
     }
 
