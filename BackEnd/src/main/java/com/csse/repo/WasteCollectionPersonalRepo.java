@@ -5,7 +5,6 @@ import com.csse.DTO.WasteCollectionPersonal;
 import com.csse.controller.WasteCollectionPersonalController;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
 import shaded_package.javax.validation.constraints.Null;
 
