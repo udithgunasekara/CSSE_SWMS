@@ -6,10 +6,10 @@ import com.csse.service.TrashBinService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 @Controller
@@ -28,4 +28,12 @@ public class TrashBinController {
         String trashbinID = trashBinService.createTrashBin(trashbin);
         return new ResponseEntity<>(trashbinID, HttpStatus.CREATED);
     }
+
+    @GetMapping
+    public ResponseEntity<List<Trashbin>> getFullTrashBin() throws ExecutionException, InterruptedException {
+        List<Trashbin> trashbinList = trashBinService.findFullTrashBins();
+        return ResponseEntity.ok(trashbinList);
+    }
+
+
 }

@@ -33,6 +33,11 @@ public class TrashbinServiceImpl implements TrashBinService {
     }
 
     @Override
+    public List<Trashbin> findFullTrashBins() throws ExecutionException, InterruptedException {
+        return trashBinRepository.getFullTrashbins();
+    }
+
+    @Override
     public void updateTrashBin(String id, Trashbin trashBin) throws ExecutionException, InterruptedException {
 
     }
