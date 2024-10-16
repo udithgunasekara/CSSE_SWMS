@@ -14,6 +14,8 @@ public interface TrashBinService {
 
     public List<Trashbin> findAllTrashBins() throws ExecutionException, InterruptedException;
 
+    public List<Trashbin> findFullTrashBins() throws ExecutionException, InterruptedException;
+
     public void updateTrashBin(String id,Trashbin trashBin) throws ExecutionException, InterruptedException;
 
     public void deleteTrashBin(String id) throws ExecutionException, InterruptedException;
