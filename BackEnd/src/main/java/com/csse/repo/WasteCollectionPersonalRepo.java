@@ -61,5 +61,21 @@ public class WasteCollectionPersonalRepo {
         return userid;
     }
 
+    public List<WasteCollectionPersonal> getAllWasteCollectionPersonal() throws ExecutionException, InterruptedException {
+        CollectionReference collectionReference = firestore.collection(COLLECTION_NAME);
+        ApiFuture<QuerySnapshot> future = collectionReference.get();
+        List<WasteCollectionPersonal> wasteCollectionPersonals = new ArrayList<>();
+        for (QueryDocumentSnapshot document : future.get().getDocuments()) {
+            wasteCollectionPersonals.add(document.toObject(WasteCollectionPersonal.class));
+        }
+        return wasteCollectionPersonals;
+    }
+
+    public void deleteWasteCollectionPersonal(String id) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = firestore.collection(COLLECTION_NAME).document(id);
+        ApiFuture<WriteResult> result = docRef.delete();
+        result.get();
+    }
+
 }
 
