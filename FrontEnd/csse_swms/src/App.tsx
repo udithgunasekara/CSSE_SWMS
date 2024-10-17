@@ -11,8 +11,19 @@ import CollectorDashboard from './components/CollectorDashboard';
 import AuthorityDashboard from './components/AuthorityDashboard';
 
 function App() {
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
-  //test cors
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
+
   useEffect(() => {
     // Test fetch data from the Spring Boot backend
     fetch("http://localhost:8081/api/test") 
@@ -30,8 +41,6 @@ function App() {
       });
   }, []);
 
-  const [user, setUser] = useState(null);
-
   const handleLogin = (userData) => {
     setUser(userData);
   };
@@ -44,7 +53,10 @@ function App() {
     <Router>
       <div className="min-h-screen bg-gray-100">
         <Routes>
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route 
+            path="/login" 
+            element={user ? <Navigate to={`/${user.role}`} replace /> : <Login onLogin={handleLogin} />} 
+          />
           <Route
             path="/user/*"
             element={
