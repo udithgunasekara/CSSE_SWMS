@@ -41,6 +41,7 @@ public class CityController {
         return new ResponseEntity<>(cities, HttpStatus.OK);
     }
 
+    //url: http://localhost:8080/api/city/1?activeModel=1
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateCityActiveModel(@PathVariable String id, @RequestParam String activeModel) throws ExecutionException, InterruptedException {
         cityService.updateCityActiveModel(id, activeModel);

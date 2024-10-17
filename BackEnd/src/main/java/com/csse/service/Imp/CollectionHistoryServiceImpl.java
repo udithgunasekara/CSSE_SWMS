@@ -22,7 +22,7 @@ public class CollectionHistoryServiceImpl implements CollectionHIstoryService {
     }
 
     @Override
-    public String createNewCollectionHistor(String uesrid,String tagid) throws ExecutionException, InterruptedException {
+    public String createNewCollectionHistor(String uesrid,String tagid,Double level) throws ExecutionException, InterruptedException {
         CollectionHistory history = new CollectionHistory();
         history.setCollecterID(uesrid);
         history.setTagid(tagid);
@@ -44,8 +44,10 @@ public class CollectionHistoryServiceImpl implements CollectionHIstoryService {
         return collectionHistoryRepository.getAllHistory(userid);
     }
 
-    @Override
+    /*@Override
     public void deleteAllHistory(String userid) throws ExecutionException, InterruptedException {
         collectionHistoryRepository.deleteAllHistory(userid);
-    }
+    }*/
+
+
 }

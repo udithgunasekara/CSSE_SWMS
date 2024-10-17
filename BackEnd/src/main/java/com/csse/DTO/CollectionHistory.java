@@ -6,16 +6,18 @@ public class CollectionHistory {
     private String tagid;
     private String date;
     private String time;
+    private String weight;
 
     public CollectionHistory() {
     }
 
-    public CollectionHistory(String historyID, String collecterID, String tagid, String date, String time) {
+    public CollectionHistory(String historyID, String collecterID, String tagid, String date, String time, String weight) {
         this.historyID = historyID;
         this.collecterID = collecterID;
         this.tagid = tagid;
         this.date = date;
         this.time = time;
+        this.weight = weight;
     }
 
     public String getHistoryID() {
@@ -56,6 +58,14 @@ public class CollectionHistory {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
     }
 }
 

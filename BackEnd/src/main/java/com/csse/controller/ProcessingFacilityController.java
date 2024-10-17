@@ -63,6 +63,7 @@ public class ProcessingFacilityController {
         }
     }
 
+    //url: http://localhost:8080/api/profacility/1?activeModel=1
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProcessingFacility(@PathVariable String id) {
         try {

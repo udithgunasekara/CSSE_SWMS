@@ -55,7 +55,7 @@ public class CollectionHistoryController {
     }
 
     // Delete all collection histories for a specific user
-    @DeleteMapping("/user/{userId}")
+    /*@DeleteMapping("/user/{userId}")
     public ResponseEntity<String> deleteAllHistory(@PathVariable String userId) {
         try {
             collectionHistoryService.deleteAllHistory(userId);
@@ -63,6 +63,6 @@ public class CollectionHistoryController {
         } catch (ExecutionException | InterruptedException e) {
             return ResponseEntity.status(500).body("Error deleting collection histories: " + e.getMessage());
         }
-    }
+    }*/
 
 }
