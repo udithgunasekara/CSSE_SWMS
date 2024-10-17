@@ -1,8 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { QrCode, Map, ClipboardList, MessageSquare } from 'lucide-react';
 
 const CollectorHome = ({ user }) => {
+  const navigate = useNavigate(); // Hook to navigate programmatically
+
+  const handleQrScan = () => {
+    navigate('/collector/qr-scanner'); // Navigate to QR scanner
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Welcome, Collector {user.username}!</h1>
@@ -28,6 +34,15 @@ const CollectorHome = ({ user }) => {
           <p className="text-gray-600">View and respond to special waste collection requests</p>
         </Link>
       </div>
+
+      {/* QR Scan Shortcut Button */}
+      <button
+        onClick={handleQrScan}
+        className="mt-6 w-full py-4 rounded-full bg-green-600 text-white text-lg font-semibold shadow-lg hover:bg-green-700 transition-all duration-300 flex items-center justify-center"
+      >
+        <QrCode size={24} className="mr-2" />
+        Open QR Scanner
+      </button>
     </div>
   );
 };

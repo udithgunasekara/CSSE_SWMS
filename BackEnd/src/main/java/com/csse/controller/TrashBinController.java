@@ -22,28 +22,24 @@ public class TrashBinController {
         this.trashBinService = trashBinService;
     }
 
-    //url: http://localhost:8080/api/trashbin
+    // url: http://localhost:8080/api/trashbin
     @PostMapping
     public ResponseEntity<String> createTrashBin(@RequestBody Trashbin trashbin) throws ExecutionException, InterruptedException {
         String trashbinID = trashBinService.createTrashBin(trashbin);
         return new ResponseEntity<>(trashbinID, HttpStatus.CREATED);
     }
 
-<<<<<<< HEAD
-    //url: http://localhost:8080/api/trashbin/1
-=======
-//    @GetMapping
-//    public ResponseEntity<List<Trashbin>> getFullTrashBin() throws ExecutionException, InterruptedException {
-//        List<Trashbin> trashbinList = trashBinService.findFullTrashBins();
-//        return ResponseEntity.ok(trashbinList);
-//    }
-
->>>>>>> 524f9a1deef1eea10e7fad8dd5cf24eb95d2a03d
+    // url: http://localhost:8080/api/trashbin/1
     @GetMapping
     public ResponseEntity<List<Trashbin>> trashBinToCollect() throws ExecutionException, InterruptedException {
         List<Trashbin> trashbinList = trashBinService.trashBinsToCollect();
         return ResponseEntity.ok(trashbinList);
     }
 
-
+    // You might decide to uncomment this method if you need it
+    // @GetMapping("/full")
+    // public ResponseEntity<List<Trashbin>> getFullTrashBin() throws ExecutionException, InterruptedException {
+    //     List<Trashbin> trashbinList = trashBinService.findFullTrashBins();
+    //     return ResponseEntity.ok(trashbinList);
+    // }
 }

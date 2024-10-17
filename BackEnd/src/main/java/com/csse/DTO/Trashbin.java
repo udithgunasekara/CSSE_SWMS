@@ -46,10 +46,6 @@ public class Trashbin {
         this.longitude = longitude;
     }
 
-    public double getFilledWeight() {
-        return BIN_WEIGHT * (wasteLevel / 100);
-    }
-
     public boolean isFull() {
         return isFull;
     }
