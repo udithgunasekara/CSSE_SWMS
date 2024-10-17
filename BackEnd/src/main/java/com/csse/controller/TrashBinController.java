@@ -14,7 +14,6 @@ import java.util.concurrent.ExecutionException;
 
 @Controller
 @RequestMapping("/api/trashbin")
-@CrossOrigin(origins = "*")
 public class TrashBinController {
 
     private final TrashBinService trashBinService;
