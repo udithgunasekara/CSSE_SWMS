@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleMap, LoadScript, DirectionsRenderer } from '@react-google-maps/api';
-import { getToCollectBins } from '../services/map';  // Import the service method
+import { GoogleMap, DirectionsRenderer } from '@react-google-maps/api';
+import { getToCollectBins } from '../services/map'; 
 
 const containerStyle = {
   width: '100%',
@@ -8,7 +8,7 @@ const containerStyle = {
 };
 
 const center = {
-  lat: 6.9271,  // Colombo coordinates as example
+  lat: 6.9271,  
   lng: 79.8612,
 };
 
@@ -22,33 +22,57 @@ interface TrashBin {
   collected: boolean;
   assigned: boolean;
 }
-
-const startPoint = { lat: 6.9269, lng: 79.8700 };  // Example starting point
+const startPoint = { lat: 6.914317329336131, lng: 79.97217190907274 };  
 
 const RouteMap = () => {
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [routeDetails, setRouteDetails] = useState({ distance: 0, time: 0 });
-  const [trashbins, setTrashBins] = useState<TrashBin[]>([]);  // State for dynamic bins
-  const mapRef = useRef<any>(null);  // Ref to persist map state
+  const [trashbins, setTrashBins] = useState<TrashBin[]>([]);
+  const mapRef = useRef<any>(null);
+  const prevTrashBinsRef = useRef<TrashBin[]>([]); // Ref to store previous trash bin data
 
-  // Fetch trash bin data on mount
-  useEffect(() => {
-    const fetchBins = async () => {
-      try {
-        const binsData = await getToCollectBins();  // No need to access `response.data` anymore
-        console.log("Fetched bins:", binsData);  // Debugging log to see the fetched data
-        setTrashBins(binsData);  // Update state with the fetched bins
+  // Utility function to compare if two arrays of trashbins are the same
+  const arraysEqual = (arr1: TrashBin[], arr2: TrashBin[]) => {
+    if (arr1.length !== arr2.length) return false;
+    return arr1.every((bin, index) =>
+      bin.trashbinId === arr2[index].trashbinId &&
+      bin.latitude === arr2[index].latitude &&
+      bin.longitude === arr2[index].longitude &&
+      bin.full === arr2[index].full &&
+      bin.collected === arr2[index].collected &&
+      bin.assigned === arr2[index].assigned
+    );
+  };
+
+  // Fetch trash bin data and update the map if the data has changed
+  const fetchBinsAndUpdateRoute = async () => {
+    try {
+      const binsData = await getToCollectBins();
+      console.log("Fetched bins:", binsData);
+
+      // Only update if the bins data has changed
+      if (!arraysEqual(binsData, prevTrashBinsRef.current)) {
+        console.log("Bins data changed, updating map...");
+        prevTrashBinsRef.current = binsData; // Store the new data as previous data
+        setTrashBins(binsData);
         if (binsData.length > 0) {
-          calculateRoute(binsData);  // Calculate the route based on the fetched bins
+          calculateRoute(binsData); // Recalculate route only when data changes
         }
-      } catch (error) {
-        console.error('Error fetching bins:', error);
+      } else {
+        console.log("Bins data is the same, no update needed.");
       }
-    };
-  
-    fetchBins();
+    } catch (error) {
+      console.error('Error fetching bins:', error);
+    }
+  };
+
+  // Fetch bins initially and set up polling for updates
+  useEffect(() => {
+    fetchBinsAndUpdateRoute(); // Initial fetch
+    const intervalId = setInterval(fetchBinsAndUpdateRoute, 30000); // Poll every 30 seconds
+
+    return () => clearInterval(intervalId); // Cleanup interval on unmount
   }, []);
-  
 
   // Function to calculate the route using fetched trash bins
   const calculateRoute = (binsData: TrashBin[]) => {
@@ -81,8 +105,8 @@ const RouteMap = () => {
             { distance: 0, time: 0 }
           );
           setRouteDetails({
-            distance: (route.distance / 1000).toFixed(2),  // Convert meters to km
-            time: Math.round(route.time / 60),  // Convert seconds to minutes
+            distance: (route.distance / 1000).toFixed(2), // Convert meters to km
+            time: Math.round(route.time / 60), // Convert seconds to minutes
           });
         } else {
           console.error('Error fetching directions:', result);
@@ -95,18 +119,16 @@ const RouteMap = () => {
     <div className="flex flex-col h-full">
       <h1 className="text-2xl font-bold mb-4">Route Map</h1>
       <div className="flex-1 bg-white shadow rounded-lg overflow-hidden">
-        <LoadScript googleMapsApiKey="AIzaSyCtV803a3BAeHMRNxe0QVsQxC83ZGHO16k">
-          {trashbins.length > 0 && directionsResponse && (
-            <GoogleMap
-              mapContainerStyle={containerStyle}
-              center={center}
-              zoom={13}
-              ref={mapRef}  // Persist map state
-            >
-              {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
-            </GoogleMap>
-          )}
-        </LoadScript>
+        {trashbins.length > 0 && directionsResponse && (
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={center}
+            zoom={13}
+            ref={mapRef}
+          >
+            {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
+          </GoogleMap>
+        )}
       </div>
       <div className="mt-4 bg-white shadow rounded-lg p-4">
         <h2 className="text-xl font-semibold mb-2">Route Details:</h2>
@@ -114,7 +136,6 @@ const RouteMap = () => {
           <li>Total distance: {routeDetails.distance} km</li>
           <li>Estimated time: {routeDetails.time} minutes</li>
           <li>Number of bins: {trashbins.length}</li>
-          <li>Areas covered: {/* Add areas dynamically based on bin data */}</li>
         </ul>
       </div>
     </div>

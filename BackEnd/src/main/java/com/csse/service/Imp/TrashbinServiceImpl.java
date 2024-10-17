@@ -50,7 +50,7 @@ public class TrashbinServiceImpl implements TrashBinService {
 
         // Select bins until total weight reaches tractor's capacity
         for (Trashbin bin : allBins) {
-            double filledWeight = bin.getFilledWeight();
+            double filledWeight = bin.getWeight();
             if (currentWeight + filledWeight <= MAX_TRACTOR_WEIGHT) {
                 selectedBins.add(bin);
                 currentWeight += filledWeight;

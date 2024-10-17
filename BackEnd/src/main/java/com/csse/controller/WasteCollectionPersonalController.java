@@ -32,7 +32,7 @@ public class WasteCollectionPersonalController {
     public ResponseEntity<String> updateWasteCollected(@PathVariable String id, @RequestParam String userid)  {
         try{
             String tagid = wasteCollectionPresonalService.updateWasteCollected(id,userid);
-            return  ResponseEntity.ok("Trashbin with ID " + tagid + " updated successfully.");
+            return  ResponseEntity.ok("Trashbin " + tagid + " collected successfully.");
         }catch (IllegalArgumentException e) {
             // Handle cases where the trashbin is empty
             return ResponseEntity.status(400).body("Trashbin is empty.");

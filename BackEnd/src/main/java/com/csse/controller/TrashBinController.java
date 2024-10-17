@@ -22,7 +22,7 @@ public class TrashBinController {
         this.trashBinService = trashBinService;
     }
 
-    //url: http://localhost:8080/api/trashbin
+    // url: http://localhost:8080/api/trashbin
     @PostMapping
     public ResponseEntity<String> createTrashBin(@RequestBody Trashbin trashbin) throws ExecutionException, InterruptedException {
         String trashbinID = trashBinService.createTrashBin(trashbin);
@@ -43,7 +43,7 @@ public class TrashBinController {
         return ResponseEntity.ok(trashbinList);
     }
 
-    //url: http://localhost:8080/api/trashbin/1
+
     @GetMapping("/all")
     public ResponseEntity<List<Trashbin>> getAllTrashbins() {
         try{
@@ -57,4 +57,11 @@ public class TrashBinController {
     }
 
 
+}
+    // You might decide to uncomment this method if you need it
+    // @GetMapping("/full")
+    // public ResponseEntity<List<Trashbin>> getFullTrashBin() throws ExecutionException, InterruptedException {
+    //     List<Trashbin> trashbinList = trashBinService.findFullTrashBins();
+    //     return ResponseEntity.ok(trashbinList);
+    // }
 }
