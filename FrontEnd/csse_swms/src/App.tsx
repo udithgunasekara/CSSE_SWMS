@@ -25,16 +25,15 @@ function App() {
   }, [user]);
 
   useEffect(() => {
-    // Test fetch data from the Spring Boot backend
-    fetch("http://localhost:8081/api/test") 
+    fetch("http://localhost:8081/api/test")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return response.text(); 
+        return response.text();
       })
       .then((data) => {
-        console.log(data); 
+        console.log(data);
       })
       .catch((error) => {
         console.error("There was a problem with the fetch operation:", error);
@@ -49,18 +48,30 @@ function App() {
     setUser(null);
   };
 
+  const isBusinessOrHouseholder = (userRole) => {
+    return userRole === 'business' || userRole === 'householder';
+  };
+
   return (
     <Router>
       <div className="min-h-screen bg-gray-100">
         <Routes>
-          <Route 
-            path="/login" 
-            element={user ? <Navigate to={`/${user.role}`} replace /> : <Login onLogin={handleLogin} />} 
+          <Route
+            path="/login"
+            element={user ? (
+              isBusinessOrHouseholder(user.role) ? (
+                <Navigate to="/user" replace />
+              ) : (
+                <Navigate to={`/${user.role}`} replace />
+              )
+            ) : (
+              <Login onLogin={handleLogin} />
+            )}
           />
           <Route
             path="/user/*"
             element={
-              user && user.role === 'user' ? (
+              user && isBusinessOrHouseholder(user.role) ? (
                 <UserDashboard user={user} onLogout={handleLogout} />
               ) : (
                 <Navigate to="/login" replace />

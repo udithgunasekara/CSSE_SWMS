@@ -1,32 +1,102 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { auth, db } from '../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
 const Login = ({ onLogin }) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('user');
   const navigate = useNavigate();
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simple login logic (replace with actual authentication in a real app)
-    const userData = { username, role };
-    onLogin(userData);
-    navigate(`/${role}`);
+    setError('');
+
+    try {
+      // Sign in with Firebase authentication
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Query all role collections
+      const businessQuery = query(
+        collection(db, 'business'),
+        where('email', '==', user.email)
+      );
+      const householderQuery = query(
+        collection(db, 'householder'),
+        where('email', '==', user.email)
+      );
+      const collectorQuery = query(
+        collection(db, 'collector'),
+        where('email', '==', user.email)
+      );
+      const authorityQuery = query(
+        collection(db, 'authority'),
+        where('email', '==', user.email)
+      );
+
+      const [businessSnapshot, householderSnapshot, collectorSnapshot, authoritySnapshot] = 
+        await Promise.all([
+          getDocs(businessQuery),
+          getDocs(householderQuery),
+          getDocs(collectorQuery),
+          getDocs(authorityQuery)
+        ]);
+
+      let userData = null;
+      let userRole = null;
+
+      if (!businessSnapshot.empty) {
+        userData = businessSnapshot.docs[0].data();
+        userRole = 'business';
+      } else if (!householderSnapshot.empty) {
+        userData = householderSnapshot.docs[0].data();
+        userRole = 'householder';
+      } else if (!collectorSnapshot.empty) {
+        userData = collectorSnapshot.docs[0].data();
+        userRole = 'collector';
+      } else if (!authoritySnapshot.empty) {
+        userData = authoritySnapshot.docs[0].data();
+        userRole = 'authority';
+      }
+
+      if (userData && userRole) {
+        userData.role = userRole;
+        onLogin(userData);
+        if (userRole === 'business' || userRole === 'householder') {
+          navigate('/user');
+        } else {
+          navigate(`/${userRole}`);
+        }
+      } else {
+        setError('Account not found. Please check your credentials.');
+      }
+
+    } catch (error) {
+      console.error('Authentication failed:', error.message);
+      setError('Invalid email or password');
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
         <h2 className="text-2xl font-bold mb-4 text-center text-green-800">WasteWise Login</h2>
+        {error && (
+          <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
             <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200"
               required
             />
@@ -41,19 +111,6 @@ const Login = ({ onLogin }) => {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200"
               required
             />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700">Role</label>
-            <select
-              id="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200"
-            >
-              <option value="user">User</option>
-              <option value="collector">Collector</option>
-              <option value="authority">Waste Management Authority</option>
-            </select>
           </div>
           <button
             type="submit"
