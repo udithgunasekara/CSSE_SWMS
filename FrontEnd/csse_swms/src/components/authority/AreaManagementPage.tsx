@@ -1,28 +1,92 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { act, useEffect, useState } from 'react';
 
-const AreaManagementPage = () => {
-  const [cities, setCities] = useState([
-    { id: 1, name: 'New York', model: 'Urban' },
-    { id: 2, name: 'Los Angeles', model: 'Suburban' },
-    { id: 3, name: 'Chicago', model: 'Mixed' },
-  ]);
+interface City {
+  cityid: string;
+  cityname: string;
+  activemodel: string;
+}
 
-  const [facilities, setFacilities] = useState([
-    {
-      id: 1,
-      name: 'Recycling Center A',
-      address: '123 Green St',
-      latitude: 40.7128,
-      longitude: -74.006,
-    },
-    {
-      id: 2,
-      name: 'Waste Treatment Plant B',
-      address: '456 Clean Ave',
-      latitude: 34.0522,
-      longitude: -118.2437,
-    },
-  ]);
+interface CollectionModel {
+  id: string;
+  modelname: string;
+  fee: string;
+}
+
+
+interface Facility {
+  facilityid: string;
+  facilityAddress: string;
+  latitude: String;
+  longitude: String;
+}
+
+const AreaManagementPage: React.FC = () => {
+  
+  const [cities, setCities] = useState<City[]>([]);
+  const [collectionModel,setCollectionModel] = useState<CollectionModel[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [facilities, setFacilities] = useState<Facility[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => { 
+      
+      try {
+        const [citiesResponse, collectionModelResponse,processingfacilityResponse] = await Promise.all([
+          axios.get<City[]>('http://localhost:8081/api/city'),
+          axios.get<CollectionModel[]>('http://localhost:8081/api/model'),
+          axios.get<Facility[]>('http://localhost:8081/api/profacility')
+        ]);
+        setCities(citiesResponse.data);
+        console.log(citiesResponse.data);
+        setCollectionModel(collectionModelResponse.data);
+        console.log(collectionModelResponse.data);
+        setFacilities(processingfacilityResponse.data);
+        console.log(processingfacilityResponse.data);
+        setLoading(false);
+      } catch (error) {
+        setError('Error fetching data');
+        setLoading(false);
+      }
+    }
+    fetchData();
+},[]);
+
+  const handleModelChange = async (cityId: string, newModel: string) => {
+    try {
+      await axios.patch(`http://localhost:8081/api/city/${cityId}?activeModel=${newModel}`);
+      setCities(
+        prevCities => prevCities.map(
+          city => city.cityid === cityId ? {...city, activemodel: newModel} : city
+        )
+      );
+    } catch (err) {
+      setError('Error updating city');
+    }
+  };
+
+  const handleDeleteCity = async (cityId: string) => {
+    try {
+      await axios.delete(`http://localhost:8081/api/city/${cityId}`);
+      setCities(cities.filter(city => city.cityid !== cityId));
+    } catch (err) {
+      setError('Error deleting city');
+    }
+  };
+
+  const handleDeleteFacility = async (facilityid: string) => {
+    try {
+      await axios.delete(`http://localhost:8081/api/profacility/${facilityid}`);
+      setFacilities(facilities.filter(facility => facility.facilityid !== facilityid));
+    } catch (err) {
+      setError('Error deleting city');
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+
 
   return (
     <div className="p-4">
@@ -53,32 +117,27 @@ const AreaManagementPage = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {cities.map((city) => (
-                  <tr key={city.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">{city.name}</td>
+                  <tr key={city.cityid}>
+                    <td className="px-6 py-4 whitespace-nowrap">{city.cityname}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <select className="border rounded p-1">
-                        <option value="Urban" selected={city.model === 'Urban'}>
-                          Urban
-                        </option>
-                        <option
-                          value="Suburban"
-                          selected={city.model === 'Suburban'}
-                        >
-                          Suburban
-                        </option>
-                        <option value="Rural" selected={city.model === 'Rural'}>
-                          Rural
-                        </option>
-                        <option value="Mixed" selected={city.model === 'Mixed'}>
-                          Mixed
-                        </option>
+                      <select className="border rounded p-1" 
+                        value={city.activemodel} 
+                        onChange={(e) => {handleModelChange(city.cityid,e.target.value)
+                          console.log(e.target.value)}
+                        }
+                      >
+                        {collectionModel.map(model => (
+                          <option key={model.id} value={model.modelname}>
+                            {model.modelname}
+                          </option>
+                          )
+                        )}                        
                       </select>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <button className="text-blue-500 hover:text-blue-700 mr-2">
-                        Edit
-                      </button>
-                      <button className="text-red-500 hover:text-red-700">
+                      <button className="text-red-500 hover:text-red-700"
+                        onClick={() => handleDeleteCity(city.cityid)}
+                      >
                         Delete
                       </button>
                     </td>
@@ -103,7 +162,7 @@ const AreaManagementPage = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Facility
+                    FacilityID
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Address
@@ -118,12 +177,12 @@ const AreaManagementPage = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {facilities.map((facility) => (
-                  <tr key={facility.id}>
+                  <tr key={facility.facilityid}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {facility.name}
+                      {facility.facilityid}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {facility.address}
+                      {facility.facilityAddress}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {facility.latitude}, {facility.longitude}
@@ -132,7 +191,9 @@ const AreaManagementPage = () => {
                       <button className="text-blue-500 hover:text-blue-700 mr-2">
                         Edit
                       </button>
-                      <button className="text-red-500 hover:text-red-700">
+                      <button className="text-red-500 hover:text-red-700"
+                        onClick={() => handleDeleteFacility(facility.facilityid)}
+                      >                        
                         Delete
                       </button>
                     </td>

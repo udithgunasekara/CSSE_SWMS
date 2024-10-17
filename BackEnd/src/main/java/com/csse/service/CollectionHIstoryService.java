@@ -7,11 +7,11 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 public interface CollectionHIstoryService {
-    String createNewCollectionHistor(String uesrid,String tagid) throws ExecutionException, InterruptedException;
+    String createNewCollectionHistor(String uesrid,String tagid,Double level) throws ExecutionException, InterruptedException;
 
     Optional<CollectionHistory> getHistory(String historyId) throws ExecutionException, InterruptedException;
 
     List<CollectionHistory> getAllHistory(String userid) throws ExecutionException, InterruptedException;
 
-    void deleteAllHistory(String userid) throws ExecutionException, InterruptedException;
+//    void deleteAllHistory(String userid) throws ExecutionException, InterruptedException;
 }
