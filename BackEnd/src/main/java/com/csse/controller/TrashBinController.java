@@ -29,9 +29,15 @@ public class TrashBinController {
         return new ResponseEntity<>(trashbinID, HttpStatus.CREATED);
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<Trashbin>> getFullTrashBin() throws ExecutionException, InterruptedException {
+//        List<Trashbin> trashbinList = trashBinService.findFullTrashBins();
+//        return ResponseEntity.ok(trashbinList);
+//    }
+
     @GetMapping
-    public ResponseEntity<List<Trashbin>> getFullTrashBin() throws ExecutionException, InterruptedException {
-        List<Trashbin> trashbinList = trashBinService.findFullTrashBins();
+    public ResponseEntity<List<Trashbin>> trashBinToCollect() throws ExecutionException, InterruptedException {
+        List<Trashbin> trashbinList = trashBinService.trashBinsToCollect();
         return ResponseEntity.ok(trashbinList);
     }
 
