@@ -1,113 +1,120 @@
-import React, { useEffect, useRef, useState } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-routing-machine';
-import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
+import React, { useState, useRef, useEffect } from 'react';
+import { GoogleMap, LoadScript, DirectionsRenderer } from '@react-google-maps/api';
+import { getToCollectBins } from '../services/map';  // Import the service method
 
-// Fix for default marker icons
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
+const containerStyle = {
+  width: '100%',
+  height: '100%',
+};
+
+const center = {
+  lat: 6.9271,  // Colombo coordinates as example
+  lng: 79.8612,
+};
+
+interface TrashBin {
+  trashbinId: string;
+  trashbinType: string;
+  latitude: string;
+  longitude: string;
+  wasteLevel: number;
+  full: boolean;
+  collected: boolean;
+  assigned: boolean;
+}
+
+const startPoint = { lat: 6.9269, lng: 79.8700 };  // Example starting point
 
 const RouteMap = () => {
-  const mapRef = useRef(null);
-  const [map, setMap] = useState(null);
-  const [routingControl, setRoutingControl] = useState(null);
+  const [directionsResponse, setDirectionsResponse] = useState(null);
   const [routeDetails, setRouteDetails] = useState({ distance: 0, time: 0 });
+  const [trashbins, setTrashBins] = useState<TrashBin[]>([]);  // State for dynamic bins
+  const mapRef = useRef<any>(null);  // Ref to persist map state
 
-  const bins = [
-    { position: [6.9271, 79.8612], name: "Bin 1 (Fort)" },
-    { position: [6.9286, 79.8473], name: "Bin 2 (Colombo 02)" },
-    { position: [6.9309, 79.8428], name: "Bin 3 (Colombo 03)" },
-  ];
-
+  // Fetch trash bin data on mount
   useEffect(() => {
-    if (!mapRef.current) return;
-
-    const newMap = L.map(mapRef.current, {
-      zoomControl: false,
-      tap: true,
-    }).setView([6.9271, 79.8612], 13);
-    
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(newMap);
-
-    L.control.zoom({
-      position: 'bottomright'
-    }).addTo(newMap);
-
-    setMap(newMap);
-
-    return () => {
-      newMap.remove();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!map) return;
-
-    const newRoutingControl = L.Routing.control({
-      waypoints: bins.map(bin => L.latLng(bin.position)),
-      routeWhileDragging: false,
-      show: false,
-      addWaypoints: false,
-      draggableWaypoints: false,
-      fitSelectedRoutes: true,
-    }).addTo(map);
-
-    newRoutingControl.on('routesfound', (e) => {
-      const routes = e.routes;
-      const summary = routes[0].summary;
-      setRouteDetails({
-        distance: (summary.totalDistance / 1000).toFixed(2),
-        time: Math.round(summary.totalTime / 60)
-      });
-    });
-
-    bins.forEach(bin => {
-      L.marker(bin.position)
-        .addTo(map)
-        .bindPopup(bin.name);
-    });
-
-    setRoutingControl(newRoutingControl);
-
-    return () => {
-      map.removeControl(newRoutingControl);
-    };
-  }, [map]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (map) {
-        map.invalidateSize();
+    const fetchBins = async () => {
+      try {
+        const binsData = await getToCollectBins();  // No need to access `response.data` anymore
+        console.log("Fetched bins:", binsData);  // Debugging log to see the fetched data
+        setTrashBins(binsData);  // Update state with the fetched bins
+        if (binsData.length > 0) {
+          calculateRoute(binsData);  // Calculate the route based on the fetched bins
+        }
+      } catch (error) {
+        console.error('Error fetching bins:', error);
       }
     };
+  
+    fetchBins();
+  }, []);
+  
 
-    window.addEventListener('resize', handleResize);
+  // Function to calculate the route using fetched trash bins
+  const calculateRoute = (binsData: TrashBin[]) => {
+    const directionsService = new google.maps.DirectionsService();
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [map]);
+    const waypoints = binsData.slice(0, binsData.length - 1).map((bin) => ({
+      location: { lat: parseFloat(bin.latitude), lng: parseFloat(bin.longitude) },
+    }));
+
+    directionsService.route(
+      {
+        origin: startPoint,
+        destination: {
+          lat: parseFloat(binsData[binsData.length - 1].latitude),
+          lng: parseFloat(binsData[binsData.length - 1].longitude),
+        },
+        travelMode: google.maps.TravelMode.DRIVING,
+        waypoints,
+        optimizeWaypoints: true,
+      },
+      (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK) {
+          setDirectionsResponse(result);
+          const route = result.routes[0].legs.reduce(
+            (acc, leg) => {
+              acc.distance += leg.distance.value;
+              acc.time += leg.duration.value;
+              return acc;
+            },
+            { distance: 0, time: 0 }
+          );
+          setRouteDetails({
+            distance: (route.distance / 1000).toFixed(2),  // Convert meters to km
+            time: Math.round(route.time / 60),  // Convert seconds to minutes
+          });
+        } else {
+          console.error('Error fetching directions:', result);
+        }
+      }
+    );
+  };
 
   return (
     <div className="flex flex-col h-full">
       <h1 className="text-2xl font-bold mb-4">Route Map</h1>
       <div className="flex-1 bg-white shadow rounded-lg overflow-hidden">
-        <div ref={mapRef} className="h-full w-full"></div>
+        <LoadScript googleMapsApiKey="AIzaSyCtV803a3BAeHMRNxe0QVsQxC83ZGHO16k">
+          {trashbins.length > 0 && directionsResponse && (
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={center}
+              zoom={13}
+              ref={mapRef}  // Persist map state
+            >
+              {directionsResponse && <DirectionsRenderer directions={directionsResponse} />}
+            </GoogleMap>
+          )}
+        </LoadScript>
       </div>
       <div className="mt-4 bg-white shadow rounded-lg p-4">
         <h2 className="text-xl font-semibold mb-2">Route Details:</h2>
         <ul className="list-disc list-inside text-sm">
           <li>Total distance: {routeDetails.distance} km</li>
           <li>Estimated time: {routeDetails.time} minutes</li>
-          <li>Number of bins: {bins.length}</li>
-          <li>Areas covered: Colombo Fort, Colombo 02, Colombo 03</li>
+          <li>Number of bins: {trashbins.length}</li>
+          <li>Areas covered: {/* Add areas dynamically based on bin data */}</li>
         </ul>
       </div>
     </div>
