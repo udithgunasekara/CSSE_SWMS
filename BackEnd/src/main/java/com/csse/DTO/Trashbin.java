@@ -13,6 +13,9 @@ public class Trashbin {
     @Getter
     @Setter
     private double wasteLevel;
+    @Setter
+    @Getter
+    private double weight;
     private boolean isFull;
     @Getter
     private String latitude;
@@ -24,10 +27,11 @@ public class Trashbin {
     public Trashbin() {
     }
 
-    public Trashbin(String trashbinId, String trashbinType, double wateLevel, boolean isFull, String latitude, String longitude, boolean isAssigned, boolean isCollected) {
+    public Trashbin(String trashbinId, String trashbinType, double wasteLevel, double weight, boolean isFull, String latitude, String longitude, boolean isAssigned, boolean isCollected) {
         this.trashbinId = trashbinId;
         this.trashbinType = trashbinType;
-        this.wasteLevel = wateLevel;
+        this.wasteLevel = wasteLevel;
+        this.weight = weight;
         this.isFull = isFull;
         this.latitude = latitude;
         this.longitude = longitude;

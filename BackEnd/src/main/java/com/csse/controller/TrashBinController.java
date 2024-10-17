@@ -29,6 +29,7 @@ public class TrashBinController {
         return new ResponseEntity<>(trashbinID, HttpStatus.CREATED);
     }
 
+    //url: http://localhost:8080/api/trashbin/1
     @GetMapping
     public ResponseEntity<List<Trashbin>> getFullTrashBin() throws ExecutionException, InterruptedException {
         List<Trashbin> trashbinList = trashBinService.findFullTrashBins();
