@@ -34,7 +34,7 @@ public class TrashbinServiceImpl implements TrashBinService {
 
     @Override
     public List<Trashbin> findAllTrashBins() throws ExecutionException, InterruptedException {
-        return null;
+            return trashBinRepository.getAllTrashbins();
     }
 
     @Override

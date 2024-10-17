@@ -22,10 +22,11 @@ public class CollectionHistoryServiceImpl implements CollectionHIstoryService {
     }
 
     @Override
-    public String createNewCollectionHistor(String uesrid,String tagid,Double level) throws ExecutionException, InterruptedException {
+    public String createNewCollectionHistor(String uesrid,String tagid,Double weight) throws ExecutionException, InterruptedException {
         CollectionHistory history = new CollectionHistory();
         history.setCollecterID(uesrid);
         history.setTagid(tagid);
+        history.setWeight(weight);
         LocalDate today = LocalDate.now();
         history.setDate(today.toString());
         LocalTime currentTime = LocalTime.now();
