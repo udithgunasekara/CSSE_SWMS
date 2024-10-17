@@ -3,6 +3,8 @@ package com.csse.DTO;
 import lombok.Getter;
 import lombok.Setter;
 
+import static com.csse.common.CommonConstraints.BIN_WEIGHT;
+
 public class Trashbin {
     @Getter
     @Setter
@@ -42,6 +44,10 @@ public class Trashbin {
     public void setLocation(String latitude, String longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public double getFilledWeight() {
+        return BIN_WEIGHT * (wasteLevel / 100);
     }
 
     public boolean isFull() {
