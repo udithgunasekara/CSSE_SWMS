@@ -38,9 +38,9 @@ public class TrashbinServiceImpl implements TrashBinService {
     }
 
     @Override
-    public List<Trashbin> trashBinsToCollect() throws ExecutionException, InterruptedException {
+    public List<Trashbin> trashBinsToCollect(String facilityId) throws ExecutionException, InterruptedException {
         // Fetch all available trash bins
-        List<Trashbin> allBins = trashBinRepository.getAllTrashbins();
+        List<Trashbin> allBins = trashBinRepository.getAllTrashbinsByFacId(facilityId);
 
         // Sort bins by fill percentage in descending order
         allBins.sort(Comparator.comparing(Trashbin::getWasteLevel).reversed());

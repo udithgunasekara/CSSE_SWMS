@@ -29,6 +29,10 @@ public class TrashBinRepository {
         return firestore.collection(TRASHBIN_COLLECTION_NAME).get().get().toObjects(Trashbin.class);
     }
 
+    public List<Trashbin> getAllTrashbinsByFacId(String facilityId) throws ExecutionException, InterruptedException {
+        return firestore.collection(TRASHBIN_COLLECTION_NAME).whereEqualTo("facilityId", facilityId).get().get().toObjects(Trashbin.class);
+    }
+
     public List<Trashbin> getFullTrashbins() throws ExecutionException, InterruptedException {
         return firestore.collection(TRASHBIN_COLLECTION_NAME)
                 .whereEqualTo("full", true)
