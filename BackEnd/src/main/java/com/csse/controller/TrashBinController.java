@@ -27,13 +27,6 @@ public class TrashBinController {
         return new ResponseEntity<>(trashbinID, HttpStatus.CREATED);
     }
 
-    // URL: http://localhost:8080/api/trashbin/collect
-    @GetMapping("/collect")
-    public ResponseEntity<List<Trashbin>> trashBinToCollect() throws ExecutionException, InterruptedException {
-        List<Trashbin> trashbinList = trashBinService.trashBinsToCollect();
-        return ResponseEntity.ok(trashbinList);
-    }
-
     // URL: http://localhost:8080/api/trashbin/{id}
     @GetMapping("/{id}")
     public ResponseEntity<List<Trashbin>> trashBinToCollectById(@PathVariable String id) throws ExecutionException, InterruptedException {
