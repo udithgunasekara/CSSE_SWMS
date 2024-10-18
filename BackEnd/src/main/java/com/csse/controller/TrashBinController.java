@@ -1,7 +1,6 @@
 package com.csse.controller;
 
 import com.csse.DTO.Trashbin;
-import com.csse.DTO.WasteCollectionPersonal;
 import com.csse.service.TrashBinService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 @Controller
@@ -22,43 +20,39 @@ public class TrashBinController {
         this.trashBinService = trashBinService;
     }
 
-    // url: http://localhost:8080/api/trashbin
+    // URL: http://localhost:8080/api/trashbin
     @PostMapping
     public ResponseEntity<String> createTrashBin(@RequestBody Trashbin trashbin) throws ExecutionException, InterruptedException {
         String trashbinID = trashBinService.createTrashBin(trashbin);
         return new ResponseEntity<>(trashbinID, HttpStatus.CREATED);
     }
 
-    //url: http://localhost:8080/api/trashbin/1
-//    @GetMapping
-//    public ResponseEntity<List<Trashbin>> getFullTrashBin() throws ExecutionException, InterruptedException {
-//        List<Trashbin> trashbinList = trashBinService.findFullTrashBins();
-//        return ResponseEntity.ok(trashbinList);
-//    }
-
-
-    @GetMapping
+    // URL: http://localhost:8080/api/trashbin/collect
+    @GetMapping("/collect")
     public ResponseEntity<List<Trashbin>> trashBinToCollect() throws ExecutionException, InterruptedException {
         List<Trashbin> trashbinList = trashBinService.trashBinsToCollect();
         return ResponseEntity.ok(trashbinList);
     }
 
+    // URL: http://localhost:8080/api/trashbin/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<List<Trashbin>> trashBinToCollectById(@PathVariable String id) throws ExecutionException, InterruptedException {
+        List<Trashbin> trashbinList = trashBinService.trashBinsToCollect(id);
+        return ResponseEntity.ok(trashbinList);
+    }
 
+    // URL: http://localhost:8080/api/trashbin/all
     @GetMapping("/all")
     public ResponseEntity<List<Trashbin>> getAllTrashbins() {
-        try{
+        try {
             List<Trashbin> trashbins = trashBinService.findAllTrashBins();
             return new ResponseEntity<>(trashbins, HttpStatus.OK);
-        } catch (ExecutionException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-
-}
-    // You might decide to uncomment this method if you need it
+    // Uncomment this method if needed in the future
     // @GetMapping("/full")
     // public ResponseEntity<List<Trashbin>> getFullTrashBin() throws ExecutionException, InterruptedException {
     //     List<Trashbin> trashbinList = trashBinService.findFullTrashBins();
