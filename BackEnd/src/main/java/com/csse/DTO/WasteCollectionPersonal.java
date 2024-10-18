@@ -1,5 +1,7 @@
 package com.csse.DTO;
 
+import java.util.List;
+
 public class WasteCollectionPersonal extends User{
     private String contactNo;
     private double wasteCollected;
@@ -28,4 +30,5 @@ public class WasteCollectionPersonal extends User{
     public void setWasteCollected(double wasteCollected) {
         this.wasteCollected = wasteCollected;
     }
+
 }

@@ -5,6 +5,7 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +52,17 @@ public class CollectionHistoryRepository {
         return historylist;
     }
 
+    public List<CollectionHistory> getAllHistory() throws ExecutionException, InterruptedException {
+        CollectionReference collectionReference = firestore.collection(COLLECTION_NAME);
+        ApiFuture<QuerySnapshot> future = collectionReference.get();
+        List<QueryDocumentSnapshot> document = future.get().getDocuments();
+        List<CollectionHistory> historylist = new ArrayList<>();
+        for (QueryDocumentSnapshot doc : document) {
+            historylist.add(doc.toObject(CollectionHistory.class));
+        }
+        return historylist;
+    }
+
     public void deleteAllHistory(String userid) throws ExecutionException, InterruptedException {
         CollectionReference collectionReference = firestore.collection(COLLECTION_NAME);
         Query query = collectionReference.whereEqualTo("collecterID", userid);
@@ -67,5 +79,18 @@ public class CollectionHistoryRepository {
             historyid = UUID.randomUUID().toString().substring(0,8);
         } while (getHistory(historyid).isPresent());
         return historyid;
+    }
+
+    public List<QueryDocumentSnapshot> historyOfPastWeek() throws ExecutionException, InterruptedException {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime oneWeekAgo = now.minusDays(7);
+
+        String nowStr = now.toString();
+        String oneWeekAgoStr = oneWeekAgo.toString();
+
+        CollectionReference historyRef = firestore.collection(COLLECTION_NAME);
+        Query query = historyRef.whereGreaterThanOrEqualTo("date",oneWeekAgoStr).whereLessThanOrEqualTo("date",nowStr);
+        ApiFuture<QuerySnapshot> future = query.get();
+        return future.get().getDocuments();
     }
 }

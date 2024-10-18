@@ -33,10 +33,11 @@ public class WasteCollectionPersonalServiceImpl implements WasteCollectionPreson
     public String updateWasteCollected(String id, String userid) throws ExecutionException, InterruptedException {
         Trashbin trashbin = trashBinRepository.findTrashbinById(id).get();
         if (trashbin.getWasteLevel() > 0) {
-            collectionHistoryService.createNewCollectionHistor(userid,id, trashbin.getWasteLevel());
+            collectionHistoryService.createNewCollectionHistor(userid,id, trashbin.getWeight());
             trashbin.setCollected(true);
             trashbin.setAssigned(false);
             trashbin.setWasteLevel(0);
+            trashbin.setWeight(0);
             trashbin.setFull(false);
             trashBinRepository.updateTrashbin(trashbin);
             WasteCollectionPersonal user = wasteCollectionPersonalRepo.getuser(userid).get();
