@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleMap, DirectionsRenderer } from '@react-google-maps/api';
-import { getToCollectBins } from '../services/map'; 
+import { getToCollectBins, getfacilitybyId } from '../services/map'; // Import getFacilityById method
 
 const containerStyle = {
   width: '100%',
@@ -22,12 +22,19 @@ interface TrashBin {
   collected: boolean;
   assigned: boolean;
 }
-const startPoint = { lat: 6.914317329336131, lng: 79.97217190907274 };  
+
+interface Facility {
+  facilityid: string;
+  facilityAddress: string;
+  latitude: string;
+  longitude: string;
+}
 
 const RouteMap = () => {
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [routeDetails, setRouteDetails] = useState({ distance: 0, time: 0 });
   const [trashbins, setTrashBins] = useState<TrashBin[]>([]);
+  const [facility, setFacility] = useState<Facility | null>(null); // Use state for facility
   const mapRef = useRef<any>(null);
   const prevTrashBinsRef = useRef<TrashBin[]>([]); // Ref to store previous trash bin data
 
@@ -47,7 +54,7 @@ const RouteMap = () => {
   // Fetch trash bin data and update the map if the data has changed
   const fetchBinsAndUpdateRoute = async () => {
     try {
-      const binsData = await getToCollectBins();
+      const binsData = await getToCollectBins('39d562b7');
       console.log("Fetched bins:", binsData);
 
       // Only update if the bins data has changed
@@ -55,7 +62,7 @@ const RouteMap = () => {
         console.log("Bins data changed, updating map...");
         prevTrashBinsRef.current = binsData; // Store the new data as previous data
         setTrashBins(binsData);
-        if (binsData.length > 0) {
+        if (binsData.length > 0 && facility) {
           calculateRoute(binsData); // Recalculate route only when data changes
         }
       } else {
@@ -66,13 +73,30 @@ const RouteMap = () => {
     }
   };
 
-  // Fetch bins initially and set up polling for updates
-  useEffect(() => {
-    fetchBinsAndUpdateRoute(); // Initial fetch
-    const intervalId = setInterval(fetchBinsAndUpdateRoute, 30000); // Poll every 30 seconds
+  // Fetch the facility details by ID
+  const fetchFacility = async () => {
+    try {
+      const facilityData = await getfacilitybyId('39d562b7'); // Replace with the actual ID
+      setFacility(facilityData);
+      console.log("Fetched facility:", facilityData);
+    } catch (error) {
+      console.error('Error fetching facility:', error);
+    }
+  };
 
-    return () => clearInterval(intervalId); // Cleanup interval on unmount
+  // Fetch facility and bins initially and set up polling for updates
+  useEffect(() => {
+    fetchFacility(); // Fetch the facility first
   }, []);
+
+  useEffect(() => {
+    if (facility) {
+      fetchBinsAndUpdateRoute(); // Initial fetch after facility is set
+      const intervalId = setInterval(fetchBinsAndUpdateRoute, 30000); // Poll every 30 seconds
+
+      return () => clearInterval(intervalId); // Cleanup interval on unmount
+    }
+  }, [facility]); // Only run when facility is available
 
   // Function to calculate the route using fetched trash bins
   const calculateRoute = (binsData: TrashBin[]) => {
@@ -84,7 +108,10 @@ const RouteMap = () => {
 
     directionsService.route(
       {
-        origin: startPoint,
+        origin: {
+          lat: parseFloat(facility!.latitude), // Use facility's latitude
+          lng: parseFloat(facility!.longitude), // Use facility's longitude
+        },
         destination: {
           lat: parseFloat(binsData[binsData.length - 1].latitude),
           lng: parseFloat(binsData[binsData.length - 1].longitude),
