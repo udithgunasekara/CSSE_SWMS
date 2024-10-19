@@ -1,8 +1,9 @@
 package com.csse.service.Imp;
 
 import com.csse.DTO.Trashbin;
+import com.csse.repo.RepoInterface.ITrashBinRepository;
 import com.csse.repo.TrashBinRepository;
-import com.csse.service.TrashBinService;
+import com.csse.service.ITrashBinService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,9 +15,9 @@ import java.util.concurrent.ExecutionException;
 import static com.csse.common.CommonConstraints.MAX_TRACTOR_WEIGHT;
 
 @Service
-public class TrashbinServiceImpl implements TrashBinService {
+public class TrashbinServiceImpl implements ITrashBinService {
 
-    private final TrashBinRepository trashBinRepository;
+    private final ITrashBinRepository trashBinRepository;
 
     public TrashbinServiceImpl(TrashBinRepository trashBinRepository) {
         this.trashBinRepository = trashBinRepository;

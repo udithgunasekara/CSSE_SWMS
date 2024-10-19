@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-public interface TrashBinService {
+public interface ITrashBinService {
 
     public String createTrashBin(Trashbin trashBin) throws ExecutionException, InterruptedException;
 
