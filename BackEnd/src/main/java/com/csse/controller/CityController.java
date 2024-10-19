@@ -1,6 +1,7 @@
 package com.csse.controller;
 
 import com.csse.DTO.City;
+import com.csse.service.ICityService;
 import com.csse.service.Imp.CityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping("/api/city")
 public class CityController {
 
-    private final CityService cityService;
+    private final ICityService cityService;
 
     public CityController(CityService cityService) {
         this.cityService = cityService;
@@ -22,8 +23,8 @@ public class CityController {
 
     //url: http://localhost:8080/api/city
     @PostMapping
-    public ResponseEntity<String> createCity(@RequestBody City city) throws ExecutionException, InterruptedException {
-        String cityId = cityService.createCity(city);
+    public ResponseEntity<City> createCity(@RequestBody City city) throws ExecutionException, InterruptedException {
+        City cityId = cityService.createCity(city);
         return new ResponseEntity<>(cityId, HttpStatus.CREATED);
     }
 

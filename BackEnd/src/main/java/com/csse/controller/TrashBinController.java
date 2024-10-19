@@ -58,10 +58,3 @@ public class TrashBinController {
 
 
 }
-    // You might decide to uncomment this method if you need it
-    // @GetMapping("/full")
-    // public ResponseEntity<List<Trashbin>> getFullTrashBin() throws ExecutionException, InterruptedException {
-    //     List<Trashbin> trashbinList = trashBinService.findFullTrashBins();
-    //     return ResponseEntity.ok(trashbinList);
-    // }
-}

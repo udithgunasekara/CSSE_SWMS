@@ -18,7 +18,7 @@ public class ProcessingFacilityService {
         this.processingFacilityRepository = processingFacilityRepository;
     }
 
-    public String createFacility(ProcessingFacility facility) throws ExecutionException, InterruptedException {
+    public ProcessingFacility createFacility(ProcessingFacility facility) throws ExecutionException, InterruptedException {
         return processingFacilityRepository.createFacility(facility);
     }
 

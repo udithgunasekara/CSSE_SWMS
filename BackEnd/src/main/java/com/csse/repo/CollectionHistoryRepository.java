@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import static com.csse.common.CommonConstraints.COLLECTION_HISTORY_COLLECTION_NAME;
 @Repository
 public class CollectionHistoryRepository {
-    private static final String COLLECTION_NAME = "collectionhistory";
     private final Firestore firestore;
 
     public CollectionHistoryRepository(Firestore firestore) {
@@ -23,7 +23,7 @@ public class CollectionHistoryRepository {
     public String createNewCollectionHistor(CollectionHistory history) throws ExecutionException, InterruptedException {
         String historyid = generateuniqueuserid();
         history.setHistoryID(historyid);
-        DocumentReference docRef = firestore.collection(COLLECTION_NAME).document(historyid);
+        DocumentReference docRef = firestore.collection(COLLECTION_HISTORY_COLLECTION_NAME).document(historyid);
         ApiFuture<WriteResult> result = docRef.set(history);
         result.get(); // Wait for the operation to complete
         return docRef.getId();
@@ -31,7 +31,7 @@ public class CollectionHistoryRepository {
 
 
     public Optional<CollectionHistory> getHistory(String historyId) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection(COLLECTION_NAME).document(historyId);
+        DocumentReference docRef = firestore.collection(COLLECTION_HISTORY_COLLECTION_NAME).document(historyId);
         ApiFuture<DocumentSnapshot> future = docRef.get();
         DocumentSnapshot document = future.get();
         if (document.exists()) {
@@ -41,7 +41,7 @@ public class CollectionHistoryRepository {
     }
 
     public List<CollectionHistory> getAllHistory(String userid) throws ExecutionException, InterruptedException {
-        CollectionReference collectionReference = firestore.collection(COLLECTION_NAME);
+        CollectionReference collectionReference = firestore.collection(COLLECTION_HISTORY_COLLECTION_NAME);
         Query query = collectionReference.whereEqualTo("collecterID", userid);
         ApiFuture<QuerySnapshot> future = query.get();
         List<QueryDocumentSnapshot> document = future.get().getDocuments();
@@ -53,7 +53,7 @@ public class CollectionHistoryRepository {
     }
 
     public List<CollectionHistory> getAllHistory() throws ExecutionException, InterruptedException {
-        CollectionReference collectionReference = firestore.collection(COLLECTION_NAME);
+        CollectionReference collectionReference = firestore.collection(COLLECTION_HISTORY_COLLECTION_NAME);
         ApiFuture<QuerySnapshot> future = collectionReference.get();
         List<QueryDocumentSnapshot> document = future.get().getDocuments();
         List<CollectionHistory> historylist = new ArrayList<>();
@@ -64,7 +64,7 @@ public class CollectionHistoryRepository {
     }
 
     public void deleteAllHistory(String userid) throws ExecutionException, InterruptedException {
-        CollectionReference collectionReference = firestore.collection(COLLECTION_NAME);
+        CollectionReference collectionReference = firestore.collection(COLLECTION_HISTORY_COLLECTION_NAME);
         Query query = collectionReference.whereEqualTo("collecterID", userid);
         ApiFuture<QuerySnapshot> future = query.get();
         List<QueryDocumentSnapshot> document = future.get().getDocuments();
@@ -88,7 +88,7 @@ public class CollectionHistoryRepository {
         String nowStr = now.toString();
         String oneWeekAgoStr = oneWeekAgo.toString();
 
-        CollectionReference historyRef = firestore.collection(COLLECTION_NAME);
+        CollectionReference historyRef = firestore.collection(COLLECTION_HISTORY_COLLECTION_NAME);
         Query query = historyRef.whereGreaterThanOrEqualTo("date",oneWeekAgoStr).whereLessThanOrEqualTo("date",nowStr);
         ApiFuture<QuerySnapshot> future = query.get();
         return future.get().getDocuments();
