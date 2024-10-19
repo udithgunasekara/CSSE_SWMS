@@ -29,16 +29,16 @@ public class TrashBinController {
         return new ResponseEntity<>(trashbinID, HttpStatus.CREATED);
     }
 
-<<<<<<< HEAD
-    //url: http://localhost:8080/api/trashbin/1
-=======
-//    @GetMapping
-//    public ResponseEntity<List<Trashbin>> getFullTrashBin() throws ExecutionException, InterruptedException {
-//        List<Trashbin> trashbinList = trashBinService.findFullTrashBins();
-//        return ResponseEntity.ok(trashbinList);
-//    }
-
->>>>>>> 524f9a1deef1eea10e7fad8dd5cf24eb95d2a03d
+//<<<<<<< HEAD
+//    //url: http://localhost:8080/api/trashbin/1
+//=======
+////    @GetMapping
+////    public ResponseEntity<List<Trashbin>> getFullTrashBin() throws ExecutionException, InterruptedException {
+////        List<Trashbin> trashbinList = trashBinService.findFullTrashBins();
+////        return ResponseEntity.ok(trashbinList);
+////    }
+//
+//>>>>>>> 524f9a1deef1eea10e7fad8dd5cf24eb95d2a03d
     @GetMapping
     public ResponseEntity<List<Trashbin>> trashBinToCollect() throws ExecutionException, InterruptedException {
         List<Trashbin> trashbinList = trashBinService.trashBinsToCollect();

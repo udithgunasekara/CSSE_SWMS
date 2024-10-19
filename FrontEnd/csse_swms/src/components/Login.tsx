@@ -118,6 +118,18 @@ const Login = ({ onLogin }) => {
           >
             Log In
           </button>
+          <p className="text-center text-sm text-gray-600 mt-4">
+            Create a new account?{' '}
+            <br/>
+            <a href="/signup" className="text-green-600 hover:text-green-800">
+              Sign up as Business
+            </a>
+            <br/>
+            <a href="/signup" className="text-green-600 hover:text-green-800">
+              Sign up as HouseHolder
+            </a>
+
+          </p>
         </form>
       </div>
     </div>

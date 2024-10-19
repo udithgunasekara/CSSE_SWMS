@@ -9,6 +9,8 @@ import Login from './components/Login';
 import UserDashboard from './components/UserDashboard';
 import CollectorDashboard from './components/CollectorDashboard';
 import AuthorityDashboard from './components/AuthorityDashboard';
+import BusinessSignup from './components/signup/BusinessReg';
+import HouseholdSignup from './components/signup/HouseholdReg';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -56,6 +58,25 @@ function App() {
     <Router>
       <div className="min-h-screen bg-gray-100">
         <Routes>
+          <Route
+            path="/signup"
+            element={            
+                <BusinessSignup />         
+            }
+          />
+          <Route
+            path="/signupHouse"
+            element={            
+                <HouseholdSignup />         
+            }
+          />
+
+
+
+
+
+
+
           <Route
             path="/login"
             element={user ? (
