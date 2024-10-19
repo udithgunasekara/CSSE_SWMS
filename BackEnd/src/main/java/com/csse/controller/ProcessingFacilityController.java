@@ -21,12 +21,12 @@ public class ProcessingFacilityController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createFacility(@RequestBody ProcessingFacility facility) {
+    public ResponseEntity<ProcessingFacility> createFacility(@RequestBody ProcessingFacility facility) {
         try {
-            String id = processingFacilityService.createFacility(facility);
-            return ResponseEntity.status(HttpStatus.CREATED).body(id);
+            ProcessingFacility facilityObject = processingFacilityService.createFacility(facility);
+            return ResponseEntity.status(HttpStatus.CREATED).body(facilityObject);
         } catch (ExecutionException | InterruptedException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating facility: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -51,6 +51,7 @@ public class ProcessingFacilityController {
         }
     }
 
+    //url: http://localhost:8080/api/profacility/1
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateProcessingFacility(@PathVariable String id, @RequestBody ProcessingFacility facility) {
         try {

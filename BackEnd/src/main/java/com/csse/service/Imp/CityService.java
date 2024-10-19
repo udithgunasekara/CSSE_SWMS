@@ -2,6 +2,7 @@ package com.csse.service.Imp;
 
 import com.csse.DTO.City;
 import com.csse.repo.CityRepository;
+import com.csse.service.ICityService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 @Service
-public class CityService {
+public class CityService implements ICityService {
 
     private final CityRepository cityRepository;
 
@@ -17,7 +18,7 @@ public class CityService {
         this.cityRepository = cityRepository;
     }
 
-    public String createCity(City city) throws ExecutionException, InterruptedException {
+    public City createCity(City city) throws ExecutionException, InterruptedException {
         return cityRepository.createCity(city);
     }
 

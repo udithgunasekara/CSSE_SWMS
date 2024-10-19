@@ -21,11 +21,11 @@ public class ProcessingFacilityRepository {
         this.firestore = firestore;
     }
 
-    public String createFacility(ProcessingFacility facility) throws ExecutionException, InterruptedException {
+    public ProcessingFacility createFacility(ProcessingFacility facility) throws ExecutionException, InterruptedException {
         String facilityId = generateUniqueFacilityId();
         facility.setFacilityid(facilityId);
         firestore.collection(P_FACILITY_COLLECTION_NAME).document(facilityId).set(facility).get();
-        return facilityId;
+        return facility;
     }
 
     public Optional<ProcessingFacility> findFacilityById(String id) throws ExecutionException, InterruptedException {
