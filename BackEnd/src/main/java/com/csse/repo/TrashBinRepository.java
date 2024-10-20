@@ -1,6 +1,7 @@
 package com.csse.repo;
 
 import com.csse.DTO.Trashbin;
+import com.csse.repo.RepoInterface.ITrashBinRepository;
 import com.google.cloud.firestore.Firestore;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 
 import static com.csse.common.CommonConstraints.TRASHBIN_COLLECTION_NAME;
 @Repository
-public class TrashBinRepository {
+public class TrashBinRepository implements ITrashBinRepository {
     private final Firestore firestore;
 
     public TrashBinRepository(Firestore firestore) {
@@ -52,7 +53,7 @@ public class TrashBinRepository {
         firestore.collection(TRASHBIN_COLLECTION_NAME).document(id).delete().get();
     }
 
-    private String generateUniqueTrashbinId() throws ExecutionException, InterruptedException {
+    public String generateUniqueTrashbinId() throws ExecutionException, InterruptedException {
         String binId;
         do {
             binId = UUID.randomUUID().toString().substring(0,8);
