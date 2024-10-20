@@ -1,7 +1,7 @@
 package com.csse.controller;
 
 import com.csse.DTO.Trashbin;
-import com.csse.service.TrashBinService;
+import com.csse.service.ITrashBinService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,9 +14,9 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping("/api/trashbin")
 public class TrashBinController {
 
-    private final TrashBinService trashBinService;
+    private final ITrashBinService trashBinService;
 
-    public TrashBinController(TrashBinService trashBinService) {
+    public TrashBinController(ITrashBinService trashBinService) {
         this.trashBinService = trashBinService;
     }
 
