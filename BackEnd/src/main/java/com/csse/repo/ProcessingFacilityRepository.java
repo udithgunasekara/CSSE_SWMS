@@ -2,6 +2,9 @@ package com.csse.repo;
 
 import com.csse.DTO.City;
 import com.csse.DTO.ProcessingFacility;
+import com.csse.firebase.FirestoreOperations;
+import com.csse.repo.RepoInterface.IProcessingFacility;
+import com.csse.util.Iutil.IdManagementStrategy;
 import com.google.cloud.firestore.Firestore;
 import org.springframework.stereotype.Repository;
 
@@ -13,42 +16,42 @@ import static com.csse.common.CommonConstraints.P_FACILITY_COLLECTION_NAME;
 
 
 @Repository
-public class ProcessingFacilityRepository {
+public class ProcessingFacilityRepository implements IProcessingFacility {
 
-    private final Firestore firestore;
+    private final FirestoreOperations dbOperations;
+    private final IdManagementStrategy idManager;
 
-    public ProcessingFacilityRepository(Firestore firestore) {
-        this.firestore = firestore;
+    public ProcessingFacilityRepository(FirestoreOperations dbOperations, IdManagementStrategy idManager) {
+        this.dbOperations = dbOperations;
+        this.idManager = idManager;
     }
 
+
     public ProcessingFacility createFacility(ProcessingFacility facility) throws ExecutionException, InterruptedException {
-        String facilityId = generateUniqueFacilityId();
+        String facilityId;
+
+        do{
+            facilityId = idManager.generateId();
+        }while(!idManager.validateId(P_FACILITY_COLLECTION_NAME, facilityId));
+
         facility.setFacilityid(facilityId);
-        firestore.collection(P_FACILITY_COLLECTION_NAME).document(facilityId).set(facility).get();
+        dbOperations.saveDocument(P_FACILITY_COLLECTION_NAME, facilityId, facility);
         return facility;
     }
 
     public Optional<ProcessingFacility> findFacilityById(String id) throws ExecutionException, InterruptedException {
-        return Optional.ofNullable(firestore.collection(P_FACILITY_COLLECTION_NAME).document(id).get().get().toObject(ProcessingFacility.class));
+        return Optional.ofNullable(dbOperations.getDocument(P_FACILITY_COLLECTION_NAME, id, ProcessingFacility.class));
     }
 
     public List<ProcessingFacility> findAllProcessingFacilities() throws ExecutionException, InterruptedException {
-        return firestore.collection(P_FACILITY_COLLECTION_NAME).get().get().toObjects(ProcessingFacility.class);
+        return dbOperations.getAllDocuments(P_FACILITY_COLLECTION_NAME, ProcessingFacility.class);
     }
 
     public void updateProcessingFacility(ProcessingFacility facility) throws ExecutionException, InterruptedException {
-        firestore.collection(P_FACILITY_COLLECTION_NAME).document(facility.getFacilityid()).set(facility).get();
+        dbOperations.saveDocument(P_FACILITY_COLLECTION_NAME, facility.getFacilityid(), facility);
     }
 
     public void deleteProcessingFacility(String id) throws ExecutionException, InterruptedException {
-        firestore.collection(P_FACILITY_COLLECTION_NAME).document(id).delete().get();
-    }
-
-    private String generateUniqueFacilityId() throws ExecutionException, InterruptedException {
-        String facilityId;
-        do {
-            facilityId = UUID.randomUUID().toString().substring(0,8);
-        } while (findFacilityById(facilityId).isPresent());
-        return facilityId;
+        dbOperations.deleteDocument(P_FACILITY_COLLECTION_NAME, id);
     }
 }

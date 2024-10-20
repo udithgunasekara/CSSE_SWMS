@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-public interface CollectionHIstoryService {
+public interface ICollectionHIstoryService {
     String createNewCollectionHistor(String uesrid,String tagid,Double level) throws ExecutionException, InterruptedException;
 
     Optional<CollectionHistory> getHistory(String historyId) throws ExecutionException, InterruptedException;
