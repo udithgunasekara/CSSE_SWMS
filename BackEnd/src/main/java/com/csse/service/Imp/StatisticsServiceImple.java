@@ -81,9 +81,9 @@ public class StatisticsServiceImple {
 
     public Double totalWasteCollectedForTheWeek() throws ExecutionException, InterruptedException {
         double totalWeight = 0;
-        List< QueryDocumentSnapshot> historyDoc = collectionHistoryRepository.historyOfPastWeek();
-        for (QueryDocumentSnapshot doc : historyDoc) {
-            Double weight = doc.getDouble("weight");
+        List< CollectionHistory> historyDoc = collectionHistoryRepository.historyOfPastWeek();
+        for (CollectionHistory doc : historyDoc) {
+            Double weight = doc.getWeight();
             if (weight != null) {
                 totalWeight += weight;
             }

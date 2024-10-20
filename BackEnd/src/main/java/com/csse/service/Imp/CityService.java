@@ -2,6 +2,7 @@ package com.csse.service.Imp;
 
 import com.csse.DTO.City;
 import com.csse.repo.CityRepository;
+import com.csse.repo.RepoInterface.ICityRepository;
 import com.csse.service.ICityService;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +13,9 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class CityService implements ICityService {
 
-    private final CityRepository cityRepository;
+    private final ICityRepository cityRepository;
 
-    public CityService(CityRepository cityRepository) {
+    public CityService(ICityRepository cityRepository) {
         this.cityRepository = cityRepository;
     }
 

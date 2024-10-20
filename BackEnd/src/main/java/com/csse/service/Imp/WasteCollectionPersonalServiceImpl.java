@@ -1,9 +1,8 @@
 package com.csse.service.Imp;
 
-import com.csse.DTO.CollectionHistory;
 import com.csse.DTO.Trashbin;
 import com.csse.DTO.WasteCollectionPersonal;
-import com.csse.repo.CityRepository;
+import com.csse.repo.RepoInterface.ICollecitonPersonRepo;
 import com.csse.repo.TrashBinRepository;
 import com.csse.repo.WasteCollectionPersonalRepo;
 import com.csse.service.WasteCollectionPresonalService;
@@ -14,11 +13,11 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class WasteCollectionPersonalServiceImpl implements WasteCollectionPresonalService {
 
-    private final WasteCollectionPersonalRepo wasteCollectionPersonalRepo;
+    private final ICollecitonPersonRepo wasteCollectionPersonalRepo;
     private final TrashBinRepository trashBinRepository;
-    private final CollectionHistoryServiceImpl collectionHistoryService;
+    private final ICollectionHistoryServiceImpl collectionHistoryService;
 
-    public WasteCollectionPersonalServiceImpl(WasteCollectionPersonalRepo wasteCollectionPersonalRepo, TrashBinRepository trashBinRepository, CollectionHistoryServiceImpl collectionHistoryService) {
+    public WasteCollectionPersonalServiceImpl(ICollecitonPersonRepo wasteCollectionPersonalRepo, TrashBinRepository trashBinRepository, ICollectionHistoryServiceImpl collectionHistoryService) {
         this.wasteCollectionPersonalRepo = wasteCollectionPersonalRepo;
         this.trashBinRepository = trashBinRepository;
         this.collectionHistoryService = collectionHistoryService;
