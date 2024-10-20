@@ -3,6 +3,7 @@ package com.csse.service.Imp;
 import com.csse.DTO.Trashbin;
 import com.csse.repo.RepoInterface.ITrashBinRepository;
 import com.csse.repo.TrashBinRepository;
+import com.csse.service.ITrashBinFactory;
 import com.csse.service.ITrashBinService;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +19,16 @@ import static com.csse.common.CommonConstraints.MAX_TRACTOR_WEIGHT;
 public class TrashbinServiceImpl implements ITrashBinService {
 
     private final ITrashBinRepository trashBinRepository;
+    private final ITrashBinFactory trashBinFactory;
 
-    public TrashbinServiceImpl(TrashBinRepository trashBinRepository) {
+    public TrashbinServiceImpl(TrashBinRepository trashBinRepository, ITrashBinFactory trashBinFactory) {
         this.trashBinRepository = trashBinRepository;
+        this.trashBinFactory = trashBinFactory;
     }
 
     @Override
     public String createTrashBin(Trashbin trashBin) throws ExecutionException, InterruptedException {
-        return trashBinRepository.createTrashBin(trashBin);
+        return trashBinRepository.createTrashBin(trashBinFactory.createTrashBin(trashBin));
     }
 
     @Override
