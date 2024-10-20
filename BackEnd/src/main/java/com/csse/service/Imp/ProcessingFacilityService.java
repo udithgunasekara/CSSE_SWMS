@@ -3,6 +3,7 @@ package com.csse.service.Imp;
 import com.csse.DTO.City;
 import com.csse.DTO.ProcessingFacility;
 import com.csse.repo.ProcessingFacilityRepository;
+import com.csse.repo.RepoInterface.IProcessingFacility;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
@@ -12,7 +13,7 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class ProcessingFacilityService {
-    private final ProcessingFacilityRepository processingFacilityRepository;
+    private final IProcessingFacility processingFacilityRepository;
 
     public ProcessingFacilityService(ProcessingFacilityRepository processingFacilityRepository) {
         this.processingFacilityRepository = processingFacilityRepository;

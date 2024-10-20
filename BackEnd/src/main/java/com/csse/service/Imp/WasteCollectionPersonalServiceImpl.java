@@ -1,24 +1,24 @@
 package com.csse.service.Imp;
 
-import com.csse.DTO.CollectionHistory;
 import com.csse.DTO.Trashbin;
 import com.csse.DTO.WasteCollectionPersonal;
-import com.csse.repo.CityRepository;
+import com.csse.repo.RepoInterface.ICollecitonPersonRepo;
 import com.csse.repo.TrashBinRepository;
 import com.csse.repo.WasteCollectionPersonalRepo;
 import com.csse.service.WasteCollectionPresonalService;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 
 @Service
 public class WasteCollectionPersonalServiceImpl implements WasteCollectionPresonalService {
 
-    private final WasteCollectionPersonalRepo wasteCollectionPersonalRepo;
+    private final ICollecitonPersonRepo wasteCollectionPersonalRepo;
     private final TrashBinRepository trashBinRepository;
-    private final CollectionHistoryServiceImpl collectionHistoryService;
+    private final ICollectionHistoryServiceImpl collectionHistoryService;
 
-    public WasteCollectionPersonalServiceImpl(WasteCollectionPersonalRepo wasteCollectionPersonalRepo, TrashBinRepository trashBinRepository, CollectionHistoryServiceImpl collectionHistoryService) {
+    public WasteCollectionPersonalServiceImpl(ICollecitonPersonRepo wasteCollectionPersonalRepo, TrashBinRepository trashBinRepository, ICollectionHistoryServiceImpl collectionHistoryService) {
         this.wasteCollectionPersonalRepo = wasteCollectionPersonalRepo;
         this.trashBinRepository = trashBinRepository;
         this.collectionHistoryService = collectionHistoryService;
@@ -31,8 +31,10 @@ public class WasteCollectionPersonalServiceImpl implements WasteCollectionPreson
 
     @Override
     public String updateWasteCollected(String id, String userid) throws ExecutionException, InterruptedException {
-        Trashbin trashbin = trashBinRepository.findTrashbinById(id).get();
+
+        Trashbin trashbin = trashBinRepository.findTrashbinById(id).orElseThrow(() -> new NoSuchElementException("Trashbin not found"));
         if (trashbin.getWasteLevel() > 0) {
+            WasteCollectionPersonal user = wasteCollectionPersonalRepo.getuser(userid).orElseThrow(() -> new NoSuchElementException("User not found"));
             collectionHistoryService.createNewCollectionHistor(userid,id, trashbin.getWeight());
             trashbin.setCollected(true);
             trashbin.setAssigned(false);
@@ -40,7 +42,7 @@ public class WasteCollectionPersonalServiceImpl implements WasteCollectionPreson
             trashbin.setWeight(0);
             trashbin.setFull(false);
             trashBinRepository.updateTrashbin(trashbin);
-            WasteCollectionPersonal user = wasteCollectionPersonalRepo.getuser(userid).get();
+
             user.setWasteCollected(user.getWasteCollected()+1);
             wasteCollectionPersonalRepo.updateWasteCollectionPersonal(userid,user);
 

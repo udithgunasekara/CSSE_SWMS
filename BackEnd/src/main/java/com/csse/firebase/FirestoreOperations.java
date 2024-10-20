@@ -11,4 +11,16 @@ public interface FirestoreOperations {
     <T> void saveDocument(String collectionName, String id, T document) throws ExecutionException, InterruptedException;
     void deleteDocument(String collectionName, String id) throws ExecutionException, InterruptedException;
     <T> List<T> getAllDocuments(String collectionName, Class<T> classType) throws ExecutionException, InterruptedException;
+    public <T> List<T> getDocumentsByFieldWithErrorHandling(
+            String collectionName,
+            String fieldName,
+            Object fieldValue,
+            Class<T> classType) throws ExecutionException, InterruptedException;
+
+    public <T> List<T> getDocumentsByDateRange(
+            String collectionName,
+            String dateField,
+            String startDate,
+            String endDate,
+            Class<T> classType) throws ExecutionException, InterruptedException;
 }

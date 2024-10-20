@@ -50,6 +50,8 @@ public class Trashbin {
         this.longitude = longitude;
     }
 
+
+
     public boolean isFull() {
         return isFull;
     }
