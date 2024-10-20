@@ -37,6 +37,7 @@ class CityServiceTest {
         city.setActivemodel("active");
     }
 
+    //test
     @Test
     void createCity_Success() throws ExecutionException, InterruptedException {
         when(cityRepository.createCity(city)).thenReturn(city);

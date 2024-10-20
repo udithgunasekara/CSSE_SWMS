@@ -21,11 +21,13 @@ public class CollectionHistoryRepository  implements ICollectionHistory {
     private final FirestoreOperations dbOperations;
     private final IdManagementStrategy idManager;
 
+
     public CollectionHistoryRepository(Firestore firestore, FirestoreOperations dbOperations, IdManagementStrategy idManager) {
         this.firestore = firestore;
         this.dbOperations = dbOperations;
         this.idManager = idManager;
     }
+    //create a new history
     @Override
     public String createNewCollectionHistor(CollectionHistory history) throws ExecutionException, InterruptedException {
         String historyid;
@@ -38,22 +40,26 @@ public class CollectionHistoryRepository  implements ICollectionHistory {
         return historyid;
     }
 
+    //get a specific history by historyid
     @Override
     public Optional<CollectionHistory> getHistory(String historyId) throws ExecutionException, InterruptedException {
         CollectionHistory history = dbOperations.getDocument(COLLECTION_HISTORY_COLLECTION_NAME, historyId, CollectionHistory.class);
         return Optional.ofNullable(history);
     }
 
+    //get all history of a specific user
     @Override
     public List<CollectionHistory> getAllHistoryByCollector(String userid) throws ExecutionException, InterruptedException {
         return dbOperations.getDocumentsByFieldWithErrorHandling(COLLECTION_HISTORY_COLLECTION_NAME, "collecterID", userid, CollectionHistory.class);
     }
 
+    //get all history of a specific user
     @Override
     public List<CollectionHistory> getAllHistory() throws ExecutionException, InterruptedException {
         return dbOperations.getAllDocuments(COLLECTION_HISTORY_COLLECTION_NAME, CollectionHistory.class);
     }
 
+    //get history of a 7 day period
     @Override
     public List<CollectionHistory> historyOfPastWeek() throws ExecutionException, InterruptedException {
         LocalDateTime now = LocalDateTime.now();

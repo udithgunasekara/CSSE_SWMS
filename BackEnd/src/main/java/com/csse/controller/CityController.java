@@ -24,6 +24,7 @@ public class CityController {
         this.cityService = cityService;
     }
 
+    //method to create city
     //url: http://localhost:8080/api/city
     @PostMapping
     public ResponseEntity<City> createCity(@RequestBody City city) throws ExecutionException, InterruptedException {
@@ -33,6 +34,7 @@ public class CityController {
         return new ResponseEntity<>(cityId, HttpStatus.CREATED);
     }
 
+    //method to get city by id
     //url: http://localhost:8080/api/city/1
     @GetMapping("/{id}")
     public ResponseEntity<City> getCityById(@PathVariable String id) throws ExecutionException, InterruptedException {
@@ -49,6 +51,7 @@ public class CityController {
 
     }
 
+    //method to get all cities
     @GetMapping
     public ResponseEntity<List<City>> getAllCities() throws ExecutionException, InterruptedException {
         logger.info("getting all cities");
@@ -57,6 +60,7 @@ public class CityController {
         return new ResponseEntity<>(cities, HttpStatus.OK);
     }
 
+    //method to update city
     //url: http://localhost:8080/api/city/1?activeModel=1
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateCityActiveModel(@PathVariable String id, @RequestParam String activeModel) throws ExecutionException, InterruptedException {
@@ -66,6 +70,7 @@ public class CityController {
         return new ResponseEntity<>("success",HttpStatus.OK);
     }
 
+    //method to delete city
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCity(@PathVariable String id) throws ExecutionException, InterruptedException {
         logger.info("deleting city with id : {}", id);
