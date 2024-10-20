@@ -2,6 +2,7 @@ package com.csse.service.Imp;
 
 import com.csse.DTO.CollectionHistory;
 import com.csse.repo.CollectionHistoryRepository;
+import com.csse.repo.RepoInterface.ICollecitonPersonRepo;
 import com.csse.repo.RepoInterface.ICollectionHistory;
 import com.csse.service.ICollectionHIstoryService;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class ICollectionHistoryServiceImpl implements ICollectionHIstoryService 
 
     private final ICollectionHistory collectionHistoryRepository;
 
-    public ICollectionHistoryServiceImpl(CollectionHistoryRepository collectionHistoryRepository) {
+    public ICollectionHistoryServiceImpl(ICollectionHistory collectionHistoryRepository) {
         this.collectionHistoryRepository = collectionHistoryRepository;
     }
 

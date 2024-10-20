@@ -2,6 +2,9 @@ package com.csse.service.Imp;
 
 import com.csse.DTO.*;
 import com.csse.repo.CollectionHistoryRepository;
+import com.csse.repo.RepoInterface.ICollecitonPersonRepo;
+import com.csse.repo.RepoInterface.ICollectionHistory;
+import com.csse.repo.RepoInterface.ITrashBinRepository;
 import com.csse.repo.TrashBinRepository;
 import com.csse.repo.WasteCollectionPersonalRepo;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
@@ -21,12 +24,12 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class StatisticsServiceImple {
-    private final CollectionHistoryRepository collectionHistoryRepository;
-    private final TrashBinRepository trashBinRepository;;
-    private final WasteCollectionPersonalRepo wasteCollectionPersonalRepo;
+    private final ICollectionHistory collectionHistoryRepository;
+    private final ITrashBinRepository trashBinRepository;;
+    private final ICollecitonPersonRepo wasteCollectionPersonalRepo;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_DATE;
 
-    public StatisticsServiceImple(CollectionHistoryRepository collectionHistoryRepository, TrashBinRepository trashBinRepository, WasteCollectionPersonalRepo wasteCollectionPersonalRepo) {
+    public StatisticsServiceImple(ICollectionHistory collectionHistoryRepository, ITrashBinRepository trashBinRepository, ICollecitonPersonRepo wasteCollectionPersonalRepo) {
         this.collectionHistoryRepository = collectionHistoryRepository;
         this.trashBinRepository = trashBinRepository;
         this.wasteCollectionPersonalRepo = wasteCollectionPersonalRepo;
