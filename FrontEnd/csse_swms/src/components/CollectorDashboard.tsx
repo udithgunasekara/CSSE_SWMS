@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import CollectorHome from './collector/CollectorHome';
 import QRScanner from './collector/QRScanner';
+//import QRScanner from '../components/OptimizedQRScanner/OptimizedQRScanner';
 import BinRoutes from './collector/BinRoutes';
 import RouteMap from './collector/RouteMap';
 import SpecialRequests from './collector/SpecialRequests';

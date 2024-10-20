@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import QrReader from 'react-qr-scanner';
-import { QrCode, User, Trash2, XCircle, CheckCircle, Loader2, Camera, History, HelpCircle } from 'lucide-react';
+import { QrCode, User, Trash2, XCircle, CheckCircle, Loader2, Camera, History, HelpCircle, Clock, Calendar, Weight } from 'lucide-react';
 
 const API_BASE_URL = 'http://localhost:8081/api/cp';
+const HISTORY_API_URL = 'http://localhost:8081/api/history/user/985d0557';
 
 const OptimizedQRScanner = () => {
   const [scannedData, setScannedData] = useState(null);
@@ -11,6 +12,24 @@ const OptimizedQRScanner = () => {
   const [scanHistory, setScanHistory] = useState([]);
   const [selectedTab, setSelectedTab] = useState('scan');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    fetchUserHistory();
+  }, []);
+
+  const fetchUserHistory = async () => {
+    try {
+      const response = await fetch(HISTORY_API_URL);
+      if (response.ok) {
+        const data = await response.json();
+        setScanHistory(data);
+      } else {
+        console.error('Failed to fetch user history');
+      }
+    } catch (error) {
+      console.error('Error fetching user history:', error);
+    }
+  };
 
   const handleWasteCollection = async (trashbinId, userId) => {
     setIsLoading(true);
@@ -26,25 +45,13 @@ const OptimizedQRScanner = () => {
       
       if (response.ok) {
         setUpdateStatus({ success: true, message: result });
-        setScanHistory(prev => [{
-          userID: userId,
-          trashbinId: trashbinId,
-          timestamp: new Date().toLocaleString(),
-          status: 'Success'
-        }, ...prev.slice(0, 4)]);
+        await fetchUserHistory(); // Refresh history after successful collection
       } else {
         const errorMessage = result || 'An error occurred';
         setUpdateStatus({ 
           success: false, 
           message: errorMessage
         });
-        
-        setScanHistory(prev => [{
-          userID: userId,
-          trashbinId: trashbinId,
-          timestamp: new Date().toLocaleString(),
-          status: 'Failed'
-        }, ...prev.slice(0, 4)]);
       }
 
     } catch (error) {
@@ -52,13 +59,6 @@ const OptimizedQRScanner = () => {
         success: false, 
         message: 'Network error: Could not connect to the server'
       });
-      
-      setScanHistory(prev => [{
-        userID: userId,
-        trashbinId: trashbinId,
-        timestamp: new Date().toLocaleString(),
-        status: 'Failed'
-      }, ...prev.slice(0, 4)]);
     } finally {
       setIsLoading(false);
     }
@@ -99,6 +99,23 @@ const OptimizedQRScanner = () => {
     setScannedData(null);
   };
 
+  const getTodayCollections = () => {
+    const today = new Date().toISOString().split('T')[0];
+    return scanHistory.filter(item => item.date === today).length;
+  };
+
+  const getTotalWeight = () => {
+    return scanHistory.reduce((total, item) => total + item.weight, 0);
+  };
+
+  const handleTabChange = (tab) => {
+    setSelectedTab(tab);
+    if (tab === 'history') {
+      fetchUserHistory(); // Fetch history when the history tab is clicked
+    }
+    resetStatus();
+  };
+
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-gray-50 p-4">
       <div className="w-full max-w-md">
@@ -108,15 +125,11 @@ const OptimizedQRScanner = () => {
           <div className="flex justify-around text-sm">
             <div className="text-center">
               <div className="font-bold">Today's Collections</div>
-              <div>{scanHistory.length}</div>
+              <div>{getTodayCollections()}</div>
             </div>
             <div className="text-center">
-              <div className="font-bold">Success Rate</div>
-              <div>
-                {scanHistory.length > 0 
-                  ? `${((scanHistory.filter(scan => scan.status === 'Success').length / scanHistory.length) * 100).toFixed(0)}%`
-                  : '0%'}
-              </div>
+              <div className="font-bold">Total Weight</div>
+              <div>{getTotalWeight()} kg</div>
             </div>
           </div>
         </div>
@@ -124,10 +137,7 @@ const OptimizedQRScanner = () => {
         {/* Navigation Tabs */}
         <div className="bg-white border-b flex justify-around p-2">
           <button
-            onClick={() => {
-              setSelectedTab('scan');
-              resetStatus();
-            }}
+            onClick={() => handleTabChange('scan')}
             className={`flex items-center px-4 py-2 rounded-lg ${
               selectedTab === 'scan' ? 'bg-green-100 text-green-700' : 'text-gray-600'
             }`}
@@ -136,7 +146,7 @@ const OptimizedQRScanner = () => {
             Scan
           </button>
           <button
-            onClick={() => setSelectedTab('history')}
+            onClick={() => handleTabChange('history')}
             className={`flex items-center px-4 py-2 rounded-lg ${
               selectedTab === 'history' ? 'bg-green-100 text-green-700' : 'text-gray-600'
             }`}
@@ -145,7 +155,7 @@ const OptimizedQRScanner = () => {
             History
           </button>
           <button
-            onClick={() => setSelectedTab('help')}
+            onClick={() => handleTabChange('help')}
             className={`flex items-center px-4 py-2 rounded-lg ${
               selectedTab === 'help' ? 'bg-green-100 text-green-700' : 'text-gray-600'
             }`}
@@ -165,7 +175,7 @@ const OptimizedQRScanner = () => {
                     delay={300}
                     onError={handleError}
                     onScan={handleScan}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', height: '100%' }}
                     constraints={{
                       video: { facingMode: 'environment' }
                     }}
@@ -173,8 +183,11 @@ const OptimizedQRScanner = () => {
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-48 h-48 border-2 border-green-500 border-dashed animate-pulse rounded-lg"></div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-center py-2 text-sm">
-                    Position QR code within the frame
+                  {/* Updated instructions overlay */}
+                  <div className="absolute inset-x-0 bottom-4 flex justify-center">
+                    <div className="bg-black bg-opacity-50 text-white text-center py-2 px-4 rounded-full text-sm">
+                      Position QR code within the frame
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -223,34 +236,34 @@ const OptimizedQRScanner = () => {
 
           {selectedTab === 'history' && (
             <div className="p-4">
-              <h2 className="text-lg font-semibold mb-4">Recent Collections</h2>
+              <h2 className="text-lg font-semibold mb-4">Collection History</h2>
               {scanHistory.length > 0 ? (
                 <div className="space-y-3">
-                  {scanHistory.map((scan, index) => (
+                  {scanHistory.map((scan) => (
                     <div 
-                      key={index} 
-                      className={`p-3 rounded-lg ${
-                        scan.status === 'Success' ? 'bg-green-50' : 'bg-red-50'
-                      }`}
+                      key={scan.historyID} 
+                      className="p-3 rounded-lg bg-green-50"
                     >
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="flex items-center text-sm text-gray-600">
-                            <User size={16} className="mr-2" />
-                            User ID: {scan.userID}
+                            <Trash2 size={16} className="mr-2" />
+                            Tag ID: {scan.tagid}
                           </div>
                           <div className="flex items-center text-sm text-gray-600 mt-1">
-                            <Trash2 size={16} className="mr-2" />
-                            Bin ID: {scan.trashbinId}
+                            <Calendar size={16} className="mr-2" />
+                            Date: {scan.date}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600 mt-1">
+                            <Clock size={16} className="mr-2" />
+                            Time: {scan.time}
                           </div>
                         </div>
                         <div className="text-right">
-                          <span className="text-xs text-gray-500 block">{scan.timestamp}</span>
-                          <span className={`text-xs font-medium ${
-                            scan.status === 'Success' ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {scan.status}
-                          </span>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Weight size={16} className="mr-2" />
+                            Weight: {scan.weight} kg
+                          </div>
                         </div>
                       </div>
                     </div>
