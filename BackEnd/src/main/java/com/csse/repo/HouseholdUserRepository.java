@@ -1,6 +1,8 @@
 package com.csse.repo;
 
 import com.csse.DTO.HouseholdUser;
+import com.csse.firebase.FirestoreOperations;
+import com.csse.util.Iutil.IdManagementStrategy;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 
@@ -9,67 +11,47 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import static com.csse.common.CommonConstraints.HOUSEHOLD_USER_COLLECTION_NAME;
 
 public class HouseholdUserRepository {
+    private final FirestoreOperations dbOperations;
+    private final IdManagementStrategy idManager;
 
-    private static final String COLLECTION_NAME = "householdUsers";
-    private final Firestore firestore;
-
-    public HouseholdUserRepository(Firestore firestore) {
-        this.firestore = firestore;
+    public HouseholdUserRepository(Firestore firestore, FirestoreOperations dbOperations, IdManagementStrategy idManager) {
+        this.dbOperations = dbOperations;
+        this.idManager = idManager;
     }
 
     // Create operation
     public String createHouseholdUser(HouseholdUser user) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection(COLLECTION_NAME).document();
-        ApiFuture<WriteResult> result = docRef.set(user);
-        result.get(); // Wait for the operation to complete
-        return docRef.getId();
+        String userid;
+        do {
+            userid = idManager.generateId();
+        } while (!idManager.validateId(HOUSEHOLD_USER_COLLECTION_NAME, userid));
+        user.setUserid(userid);
+        dbOperations.saveDocument(HOUSEHOLD_USER_COLLECTION_NAME, userid, user);
+        return userid;
     }
 
     // Read operation
     public Optional<HouseholdUser> getHouseholdUser(String userId) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection(COLLECTION_NAME).document(userId);
-        ApiFuture<DocumentSnapshot> future = docRef.get();
-        DocumentSnapshot document = future.get();
-        if (document.exists()) {
-            return Optional.ofNullable(document.toObject(HouseholdUser.class));
-        }
-        return Optional.empty();
+        HouseholdUser user = dbOperations.getDocument(HOUSEHOLD_USER_COLLECTION_NAME, userId, HouseholdUser.class);
+        return Optional.ofNullable(user);
     }
 
     // Update operation
     public void updateHouseholdUser(String userId, HouseholdUser updatedUser) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection(COLLECTION_NAME).document(userId);
-        ApiFuture<WriteResult> result = docRef.set(updatedUser);
-        result.get(); // Wait for the operation to complete
+        dbOperations.saveDocument(HOUSEHOLD_USER_COLLECTION_NAME, userId, updatedUser);
     }
 
     // Delete operation
     public void deleteHouseholdUser(String userId) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection(COLLECTION_NAME).document(userId);
-        ApiFuture<WriteResult> result = docRef.delete();
-        result.get(); // Wait for the operation to complete
+        dbOperations.deleteDocument(HOUSEHOLD_USER_COLLECTION_NAME, userId);
     }
 
     // List all household users
     public List<HouseholdUser> getAllHouseholdUsers() throws ExecutionException, InterruptedException {
-        List<HouseholdUser> users = new ArrayList<>();
-        ApiFuture<QuerySnapshot> future = firestore.collection(COLLECTION_NAME).get();
-        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
-        for (QueryDocumentSnapshot document : documents) {
-            users.add(document.toObject(HouseholdUser.class));
-        }
-        return users;
+        return dbOperations.getAllDocuments(HOUSEHOLD_USER_COLLECTION_NAME, HouseholdUser.class);
     }
-
-    private String generateUniqueHHUserId() throws ExecutionException, InterruptedException {
-        String HHUID;
-        do {
-            HHUID = UUID.randomUUID().toString().substring(0,8);
-        } while (getHouseholdUser(HHUID).isPresent());
-        return HHUID;
-    }
-
 
 }

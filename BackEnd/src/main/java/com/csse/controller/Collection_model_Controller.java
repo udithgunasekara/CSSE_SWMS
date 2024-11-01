@@ -19,6 +19,7 @@ public class Collection_model_Controller {
         this.collection_model_service = collection_model_service;
     }
 
+    //method to get all collection models
     //url: http://localhost:8080/api/model
     @GetMapping
     public ResponseEntity<List<Collection_model>> getAllCollectionModels() throws ExecutionException, InterruptedException {
