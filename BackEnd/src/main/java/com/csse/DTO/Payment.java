@@ -17,6 +17,10 @@ public class Payment {
     private Date paymentDate;
     private String paymentType;
     private String paymentMethod;
+    private String role;
+    private String city;
+    private String zipCode;
+    private String userId;
 
     // Getters and Setters
 }

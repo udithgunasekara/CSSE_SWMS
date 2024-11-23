@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { CreditCard, Calendar, Lock, Building } from 'lucide-react';
 
 const PaymentForm = () => {
+  // Retrieving user data from local storage
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  console.log("Here the id", user.userid);
+  console.log("Here the role:", user.role);
+
+  // State for payment form details
   const [paymentInfo, setPaymentInfo] = useState({
     cardNumber: '',
     expiryDate: '',
@@ -9,9 +15,14 @@ const PaymentForm = () => {
     billingAddress: '',
     city: '',
     state: '',
-    zipCode: ''
+    zipCode: '',
+    role: user.userAccountType, // Role from localStorage
+    userId: user.userid, // User ID from localStorage
+    paymentType: 'Credit Card', // Default payment type
+    paymentMethod: 'Online', // Default payment method
   });
 
+  // Handling input field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPaymentInfo(prev => ({
@@ -20,9 +31,45 @@ const PaymentForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  // Handling form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle payment submission
+
+    // Creating payment data to be sent to the backend
+    const paymentData = {
+      userId: paymentInfo.userId, // Sending userId
+      role: paymentInfo.role, // Sending role
+      cardNumber: paymentInfo.cardNumber,
+      expiryDate: paymentInfo.expiryDate,
+      cvv: paymentInfo.cvv,
+      billingAddress: paymentInfo.billingAddress,
+      city: paymentInfo.city,
+      state: paymentInfo.state,
+      zipCode: paymentInfo.zipCode,
+      paymentType: paymentInfo.paymentType,
+      paymentMethod: paymentInfo.paymentMethod,
+    };
+
+    try {
+      const response = await fetch('http://localhost:8081/payments/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paymentData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Payment submission failed');
+      }
+
+      const data = await response.json();
+      console.log('Payment successful', data);
+      // Handle success actions like showing a success message
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle error actions like showing an error message
+    }
   };
 
   return (

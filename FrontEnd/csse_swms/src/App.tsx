@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,6 +12,7 @@ import CollectorDashboard from './components/CollectorDashboard';
 import AuthorityDashboard from './components/AuthorityDashboard';
 import BusinessSignup from './components/signup/BusinessReg';
 import HouseholdSignup from './components/signup/HouseholdReg';
+import PaymentForm from './components/user/Payment';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -27,19 +29,21 @@ function App() {
   }, [user]);
 
   useEffect(() => {
-    fetch("http://localhost:8081/api/test")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.text();
-      })
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
+    const fetchData = async () => {
+      try {
+        const token = sessionStorage.getItem('token');
+        const response = await axios.get("http://localhost:8081/api/test", {
+          headers: {
+        Authorization: `Bearer ${token}`
+          }
+        });
+        console.log("Data from the server:", response.data);
+      } catch (error) {
         console.error("There was a problem with the fetch operation:", error);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleLogin = (userData) => {
@@ -71,6 +75,7 @@ function App() {
             }
           />
 
+<Route path="/paymentForm" element={<PaymentForm />} />
 
 
 

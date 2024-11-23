@@ -27,6 +27,8 @@ public class SpecialWasteRepository {
         firestore.collection("special_waste").add(specialWaste);
     }
 
+
+  //Get all special wastes
    public List<SpecialWasteDTO> getAllSpecialWastes() throws ExecutionException, InterruptedException {
     List<SpecialWasteDTO> specialWastes = new ArrayList<>();
     ApiFuture<QuerySnapshot> future = firestore.collection("special_waste").get();

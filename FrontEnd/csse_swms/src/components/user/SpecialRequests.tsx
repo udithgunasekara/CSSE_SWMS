@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const WasteCollectionForm = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     id: JSON.parse(localStorage.getItem('user') || '{}').userid,
   });
+
+  const token = sessionStorage.getItem('token');
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   console.log("Here the id", user.userid);
@@ -20,18 +24,27 @@ const WasteCollectionForm = () => {
     e.preventDefault();
     
     try {
+      console.log(token);
       const response = await fetch('http://localhost:8081/requestSpecialWaste', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        
         },
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         const result = await response.json();
-        console.log('Form submitted successfully:', result);
-        alert('Your waste collection request has been submitted!');
+
+        //navigate paymentForm
+        navigate('/paymentForm');
+        
+
+
+        // console.log('Form submitted successfully:', result);
+        // alert('Your waste collection request has been submitted!');
         
         // Optionally, reset form fields
         setFormData({

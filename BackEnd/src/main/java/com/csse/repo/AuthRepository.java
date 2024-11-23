@@ -113,44 +113,5 @@ public class AuthRepository{
         }
     }
 
-//    public Mono<LoginRequest> findByUsernameAndPasswordAndRole(String username, String password, String role) {
-//        String collectionName = getCollectionNameByRole(role);
-//        CollectionReference collection = firestore.collection(collectionName);
-//
-//        return Mono.create(sink -> {
-//            collection.whereEqualTo("username", username)
-//                    .whereEqualTo("password", password) // Consider hashing passwords in a real app
-//                    .get()
-//                    .addListener((QuerySnapshot querySnapshot, Exception e) -> {
-//                        if (e != null) {
-//                            sink.error(e);
-//                            return;
-//                        }
-//
-//                        List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
-//                        if (documents.isEmpty()) {
-//                            sink.success(null); // No user found
-//                        } else {
-//                            LoginRequest user = documents.get(0).toObject(LoginRequest.class); // Assuming you have a User class
-//                            sink.success(user); // User found
-//                        }
-//                    });
-//        });
-//    }
-//
-//    private String getCollectionNameByRole(String role) {
-//        switch (role) {
-//            case "business":
-//                return COLLECTION_BUSINESS;
-//            case "house":
-//                return COLLECTION_HOUSEHOLDER;
-//            case "collector":
-//                return COLLECTION_COLLECTOR;
-//            case "authority":
-//                return COLLECTION_AUTHORITY;
-//            default:
-//                throw new IllegalArgumentException("Invalid role: " + role);
-//        }
-//    }
 
 }

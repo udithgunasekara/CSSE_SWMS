@@ -20,11 +20,13 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    // New register method for business users
     @PostMapping("/register/business")
     public ResponseEntity<?> registerBusinessUser(@RequestBody BusinessUser businessUser) {
         return ResponseEntity.ok(authService.registerBusinessUser(businessUser));
     }
 
+    // New register method for household users
     @PostMapping("/register/household")
     public ResponseEntity<?> registerHouseholdUser(@RequestBody HouseholdUser householdUser) {
         return ResponseEntity.ok(authService.registerHouseholdUser(householdUser));
@@ -41,9 +43,7 @@ public class AuthController {
 
             // You can retrieve the user details and verify role from Firebase
             // In Firebase, role info can be stored in custom claims or database collections
-            String role = request.getRole(); // e.g., "business", "householder", etc.
-
-            // Based on the role, perform additional logic, e.g., querying collections in Firestore
+            String role = request.getRole();
 
             return ResponseEntity.ok("Login successful. UID: " + uid);
         } catch (FirebaseAuthException e) {

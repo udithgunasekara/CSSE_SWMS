@@ -16,6 +16,7 @@ import CollectorManagement from './authority/CollectorManagement';
 import RouteManagement from './authority/RouteManagement';
 import WasteAnalytics from './authority/WasteAnalytics';
 import AreaManagementPage from './authority/AreaManagementPage';
+import SpecialRequests from './collector/SpecialRequests';
 
 const AuthorityDashboard = ({ user, onLogout }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -90,6 +91,17 @@ const AuthorityDashboard = ({ user, onLogout }) => {
                 <Settings className="mr-2" size={16} /> Area Management
               </Link>
             </li>
+
+            <li>
+              <Link
+                to="/authority/special-waste"
+                className="flex items-center py-2 px-4 rounded hover:bg-green-700 text-sm md:text-base"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Settings className="mr-2" size={16} /> Special Waste
+              </Link>
+            </li>
+
           </ul>
         </nav>
         <button
@@ -120,6 +132,7 @@ const AuthorityDashboard = ({ user, onLogout }) => {
             <Route path="/routes" element={<RouteManagement />} />
             <Route path="/analytics" element={<WasteAnalytics />} />
             <Route path="/area-management" element={<AreaManagementPage />} />
+            <Route path="/special-waste" element={<SpecialRequests />} />
           </Routes>
         </main>
       </div>

@@ -23,7 +23,7 @@ public class SpecialWasteServiceImpl implements SpecialWasteService {
 
     // Constructor injection of the repository
     @Override
-   public Optional<SpecialWasteDTO> createSpecialWaste(SpecialWasteDTO specialWaste) throws ExecutionException, InterruptedException {
+   public Optional<SpecialWasteDTO> createSpecialWaste(SpecialWasteDTO specialWaste) {
     try {
         // Set the current date
         specialWaste.setDate(java.time.LocalDate.now().toString());

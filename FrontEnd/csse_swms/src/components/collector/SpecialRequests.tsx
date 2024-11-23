@@ -1,26 +1,129 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { fetchSpecialRequests } from './service/service';
 
 const SpecialRequests = () => {
   const [requests, setRequests] = useState([]);
 
   // Fetching data from the backend
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const response = await fetch('http://localhost:8081/getAllSpecialWastes'); // Adjust the path if needed
-        if (response.ok) {
-          const data = await response.json();
-          setRequests(data);
-        } else {
-          console.error('Error fetching special waste data');
-        }
-      } catch (error) {
-        console.error('Network error:', error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchRequests = async () => {
+  //     try {
+  //       const token = sessionStorage.getItem('token') // Replace with actual token
+  //       const response = await fetch('http://localhost:8081/getAllSpecialWastes', {
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //         },
+  //       }); // Adjust the path if needed
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         setRequests(data);
+  //       } else {
+  //         console.error('Error fetching special waste data');
+  //       }
+  //     } catch (error) {
+  //       console.error('Network error:', error);
+  //     }
+  //   };
 
+  //   const fitchCors = async () => {
+  //     try {
+  //       const token = sessionStorage.getItem('token') 
+  //       const response = await fetch('http://localhost:8081/test/cors', {
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //         },
+  //       });
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         console.log("Below Printing")
+  //         console.log(data);
+  //       //  setRequests(data);
+  //       } else {
+  //         console.error('Error fetching special waste data');
+  //       }
+  //     } catch (error) {
+  //       console.error('Network error:', error)
+  //     }
+  //   }
+  
+
+
+
+
+  //   fetchRequests(), fitchCors();
+  // }, []);
+
+  
+
+
+
+
+
+  const fetchCors = async () => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const response = await axios.get('http://localhost:8081/test/cors', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+  
+      if (response.status === 200) {
+        const data = response.data;
+        console.log("Below Printing");
+        console.log(data);
+        // setRequests(data); // Uncomment if you are using this state
+      } else {
+        console.error('Error fetching special waste data');
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
+
+  const fetchRequests = async () => {
+    // Implement fetchRequests logic here if needed
+    try {
+            const token = sessionStorage.getItem('token') // Replace with actual token
+            // const response = await axios.get('http://localhost:8081/test/getAllSpecialWastes', {
+            //   headers: {
+            //     'Authorization': `Bearer ${token}`,
+            //   },
+            // }); // Adjust the path if needed
+            
+          fetchSpecialRequests().then((response) => {
+            if (response.status === 200) {
+              const data = response.data;
+              setRequests(data);
+            } else {
+              console.error('Error fetching special waste data');
+            }
+          }).catch((error) => {
+            console.error('Network error:', error);
+          });
+        }
+          catch (error) {
+            console.error('Network error:', error);
+          }
+  };
+  
+  // Call fetchRequests and fetchCors when the component mounts
+  useEffect(() => {
+   
+  
     fetchRequests();
+    fetchCors();
   }, []);
+
+
+
+
+
+
+
+
+
 
 
   const updateStatus = async (uuid, newStatus) => {
@@ -71,7 +174,7 @@ const SpecialRequests = () => {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Special Requests</h1>
+      <h1 className="text-2xl font-bold">Specialll Requests</h1>
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <ul className="divide-y divide-gray-200">
           {requests.map(request => (
