@@ -11,6 +11,8 @@ const Login = ({ onLogin }) => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
 
+  let token = '';
+
   //create a dummy object to store the user
   let userData = {
     data: 'authority',
@@ -42,6 +44,8 @@ const Login = ({ onLogin }) => {
           console.log("Loginn successful");
           
           console.log(response.data);
+          token = response.data;
+          console.log("Here the token", token);
           sessionStorage.setItem('token',response.data);
         }
 
@@ -49,9 +53,8 @@ const Login = ({ onLogin }) => {
 
       
 
-      // const token = await response.text();
-      // console.log(token);
-      // sessionStorage.setItem('token', token); // Store the token received from the backend
+     
+       // Store the token received from the backend
 
 
       //end of token and new login

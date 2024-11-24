@@ -55,6 +55,9 @@ const UserDashboard = ({ user, onLogout }) => {
         </nav>
         <button
           onClick={() => {
+            //delete token value from session Storage
+            sessionStorage.clear();
+            console.log("logout work");
             onLogout();
             setIsMenuOpen(false);
           }}

@@ -25,6 +25,7 @@ function App() {
       localStorage.setItem('user', JSON.stringify(user));
     } else {
       localStorage.removeItem('user');
+      // sessionStorage.removeItem('token');
     }
   }, [user]);
 
