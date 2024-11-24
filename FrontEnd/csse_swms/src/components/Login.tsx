@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+import { userLogin } from './collector/service/service';
 
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
@@ -27,23 +28,30 @@ const Login = ({ onLogin }) => {
         password: password,
       };
 
-      const response = await fetch('http://localhost:8081/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      // const response = await fetch('http://localhost:8081/login', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(formData),
+      // });
 
-      if(response.ok){
-        console.log("Loginn successful");
-        
-        console.log(response.data);
-      }
+      userLogin(formData).then((response) => {
 
-      const token = await response.text();
-      console.log(token);
-      sessionStorage.setItem('token', token); // Store the token received from the backend
+        if(response.status){
+          console.log("Loginn successful");
+          
+          console.log(response.data);
+          sessionStorage.setItem('token',response.data);
+        }
+
+      })
+
+      
+
+      // const token = await response.text();
+      // console.log(token);
+      // sessionStorage.setItem('token', token); // Store the token received from the backend
 
 
       //end of token and new login
